@@ -89,6 +89,20 @@ typedef struct
 /******************************************************************************
                    Inline static functions section
 ******************************************************************************/ 
+// the macros for the manipulation by A4
+HAL_ASSIGN_PIN(A4, A, 4);
+// the macros for the manipulation by A5
+HAL_ASSIGN_PIN(A5, A, 5);
+// the macros for the manipulation by A6
+HAL_ASSIGN_PIN(A6, A, 6);
+// the macros for the manipulation by A7
+HAL_ASSIGN_PIN(A7, A, 7);
+// the macros for the manipulation by A8
+HAL_ASSIGN_PIN(A8, A, 8);
+// the macros for the manipulation by A9
+HAL_ASSIGN_PIN(A9, A, 9);
+// the macros for the manipulation by A12
+HAL_ASSIGN_PIN(A12, A, 12);
 // the macros for the manipulation by A13
 HAL_ASSIGN_PIN(A13, A, 13);
 // the macros for the manipulation by A14
@@ -105,8 +119,10 @@ HAL_ASSIGN_PIN(A18, A, 18);
 HAL_ASSIGN_PIN(A19, A, 19);
 // the macros for the manipulation by A22
 HAL_ASSIGN_PIN(A22, A, 22);
-// the macros for the manipulation by A22
+// the macros for the manipulation by A23
 HAL_ASSIGN_PIN(A23, A, 23);
+// the macros for the manipulation by A27
+HAL_ASSIGN_PIN(A27, A, 27);
 // the macros for the manipulation by A28
 HAL_ASSIGN_PIN(A28, A, 28);
 // the macros for the manipulation by B22
