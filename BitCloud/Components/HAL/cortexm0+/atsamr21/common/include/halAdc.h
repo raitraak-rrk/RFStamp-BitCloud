@@ -86,7 +86,11 @@ typedef enum
   HAL_ADC_CHANNEL4 = 4,
   HAL_ADC_CHANNEL5 = 5,
   HAL_ADC_CHANNEL6 = 6,
-  HAL_ADC_CHANNEL7 = 7
+  HAL_ADC_CHANNEL7 = 7,
+  HAL_ADC_CHANNEL10 = 10,
+  HAL_ADC_CHANNEL11 = 11,
+  HAL_ADC_CHANNEL16 = 16,
+  HAL_ADC_CHANNEL17 = 17,
 } HAL_AdcChannelNumber_t;
 
 typedef uint8_t HalAdcService_t;
