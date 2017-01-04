@@ -1,0 +1,4 @@
+// This
+#define N_Security_GetKeyBitMask N_Security_GetKeyBitMask_Impl
+#define N_Security_GetRandomData N_Security_GetRandomData_Impl
+#define N_Security_Crypt16 N_Security_Crypt16_Impl

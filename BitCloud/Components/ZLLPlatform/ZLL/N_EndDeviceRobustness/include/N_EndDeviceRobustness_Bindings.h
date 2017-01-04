@@ -1,0 +1,7 @@
+// N_Connection
+#define N_Connection_Subscribe N_ConnectionEndDevice_Subscribe_Impl
+#define N_Connection_Reconnect N_ConnectionEndDevice_Reconnect_Impl
+#define N_Connection_ReconnectUrgent N_ConnectionEndDevice_ReconnectUrgent_Impl
+
+// N_DeviceInfo
+#define N_DeviceInfo_IsFactoryNew N_DeviceInfo_IsFactoryNew_Impl

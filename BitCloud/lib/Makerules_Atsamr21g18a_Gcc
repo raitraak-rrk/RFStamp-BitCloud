@@ -1,0 +1,28 @@
+#----------------------------------------------
+#HAL makerules - should be included into components Makerules
+#----------------------------------------------
+
+#-Compiler type definition---------------------
+COMPILER_TYPE = GCC
+COMPILER_AND_MICRO_TYPE = GCC_ARM
+#-Tools definitions----------------------------
+AS       = arm-none-eabi-as
+LD       = arm-none-eabi-ld
+CC       = arm-none-eabi-gcc
+CPP      = arm-none-eabi-g++
+AR       = arm-none-eabi-ar
+NM       = arm-none-eabi-nm
+STRIP    = arm-none-eabi-strip
+OBJCOPY  = arm-none-eabi-objcopy
+OBJDUMP  = arm-none-eabi-objdump
+SIZE     = arm-none-eabi-size
+
+#-Compiler flags-------------------------------
+CFLAGS =  -O2 -std=gnu99 -pipe -c -W -Wall -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -ffunction-sections -mcpu=cortex-m0plus -fno-builtin-memcpy -fomit-frame-pointer -mthumb -DRELEASE -D_STATS_ENABLED_ -D_SLEEP_WHEN_IDLE_
+AR_KEYS = cr
+
+
+#-Objects to be linked with app----------------
+PLATFORM_SPECIFIC_OBJECTS  = 
+
+SE_PATH      = $(COMPONENTS_PATH)/./SystemEnvironment

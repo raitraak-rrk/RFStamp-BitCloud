@@ -1,0 +1,9 @@
+// N_Binding
+#define N_Binding_AddBinding N_Binding_AddBinding_Impl
+#define N_Binding_AddBindingExt N_Binding_AddBindingExt_Impl
+#define N_Binding_RemoveBinding N_Binding_RemoveBinding_Impl
+#define N_Binding_RemoveBindings N_Binding_RemoveBindings_Impl
+#define N_Binding_FindBinding N_Binding_FindBinding_Impl
+#define N_Binding_GetNumberOfBindingRecords N_Binding_GetNumberOfBindingRecords_Impl
+#define N_Binding_GetBindingRecord N_Binding_GetBindingRecord_Impl
+#define N_Binding_RemoveBindingRecord N_Binding_RemoveBindingRecord_Impl

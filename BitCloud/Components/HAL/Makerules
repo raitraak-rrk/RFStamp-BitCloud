@@ -1,0 +1,1414 @@
+COMPONENTS_PATH = $(HAL_PATH)/..
+STACK_PATH = $(COMPONENTS_PATH)/..
+STACK_LIB_PATH = $(STACK_PATH)/lib
+LIST_PATH = ./list
+
+include $(COMPONENTS_PATH)/HAL/Configuration
+
+#-------------------------------------------------------------------------------
+# Platform specific compiler flags definition and settins checking:
+#-------------------------------------------------------------------------------
+ifndef PLATFORM
+  $(error ERROR in file  Makerules: $(PLATFORM) Unknown type of platform)
+endif
+
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT)                         ######### ZigBit platform #####
+  ifeq (, $(findstring $(HAL_FREQUENCY), HAL_8MHz HAL_4MHz))
+    $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+  endif
+
+  ifeq (, $(findstring $(HAL), ATMEGA1281 ATMEGA2561))
+    $(error ERROR in file  Makerules: $(HAL) Unknown type of HAL for $(PLATFORM) platform)
+  endif
+
+  # For platform with 32.768 kHz only.
+  SYSTEM_TIME_ON = SLEEP_TIMER
+  PFLAGS += -DHAL_USE_ASYNC_TIMER
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(PWM), TRUE)
+    PFLAGS += -DHAL_USE_PWM
+  endif
+endif # ZIGBIT
+
+ifeq ($(PLATFORM), PLATFORM_RAVEN)                            ######### Raven platform #####
+  # Checking parameters which were set by user.
+  ifeq (, $(findstring $(HAL_FREQUENCY), HAL_8MHz HAL_4MHz))
+    $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+  endif
+  # Setting platform parameters which can not be changed by user.
+  HAL = ATMEGA1284
+
+  # For platform with 32.768 kHz only.
+  SYSTEM_TIME_ON = SLEEP_TIMER
+  PFLAGS += -DHAL_USE_ASYNC_TIMER
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(PWM), TRUE)
+    PFLAGS += -DHAL_USE_PWM
+  endif
+endif # RAVEN
+
+ifeq ($(PLATFORM), PLATFORM_ATML_USB_DONGLE)         ######### ATML_USB_DONGLE platform #####
+  # Setting platform parameters which can not be changed by user.
+  HAL = AT90USB1287
+  HAL_FREQUENCY = HAL_8MHz
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(PWM), TRUE)
+    PFLAGS += -DHAL_USE_PWM
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+endif # ATML_USB_DONGLE
+
+ifeq ($(PLATFORM), PLATFORM_STK600)   ####### ATML_STK600 platform ####
+  RF_EXTENDER = REB231
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(SPI), TRUE)
+    PFLAGS += -DHAL_USE_SPI
+  endif
+
+  ifneq (, $(findstring $(HAL), ATXMEGA128A1 ATXMEGA256A3 ATXMEGA256D3))
+    ifeq (, $(findstring $(HAL_CLOCK_SOURCE), CRYSTAL_16MHz RC_INTERNAL_32MHz RC_INTERNAL_2MHz))
+      $(error ERROR in file  Makerules: $(HAL_CLOCK_SOURCE) Unknown type of clock source for $(PLATFORM) platform)
+    endif
+
+    ifeq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_ULP RC_32K CRYSTAL_32K))
+      $(error ERROR in file  Makerules: $(HAL_ASYNC_CLOCK_SOURCE) Unknown type of asynchronous clock source for $(PLATFORM) platform)
+    endif
+
+    # Set asynchronous clock as system time for platform with 32.768 kHz (RC or crystal).
+    ifneq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_32K CRYSTAL_32K))
+      SYSTEM_TIME_ON = SLEEP_TIMER
+    endif
+
+    ifeq (, $(findstring $(HAL_FREQUENCY), HAL_4MHz HAL_8MHz HAL_12MHz HAL_16MHz HAL_32MHz))
+      $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+    endif
+
+  else ifneq (, $(findstring $(HAL), ATMEGA128RFA1 ATMEGA256RFR2 ATMEGA2564RFR2))
+    ifeq (, $(findstring $(HAL_FREQUENCY), HAL_16MHz HAL_8MHz HAL_4MHz))
+      $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+    endif
+
+    ifeq ($(ASYNCHRONOUS_TIMER), TRUE)
+      # For platform with 32.768 kHz only.
+      SYSTEM_TIME_ON = SLEEP_TIMER
+      PFLAGS += -DHAL_USE_ASYNC_TIMER
+    endif
+
+    ifeq ($(EXT_INTERRUPT), TRUE)
+      PFLAGS += -DHAL_USE_EXT_IRQ
+    endif
+    ifeq ($(1WIRE), TRUE)
+      PFLAGS += -DHAL_USE_1WIRE
+    endif
+    ifeq ($(PWM), TRUE)
+      PFLAGS += -DHAL_USE_PWM
+    endif
+    ifeq ($(HW_AES), TRUE)
+      PFLAGS += -DHAL_USE_HW_AES
+    endif
+
+  else
+    $(error ERROR in file  Makerules: $(HAL) Unknown type of HAL for $(PLATFORM) platform)
+  endif
+endif # PLATFORM_STK600
+
+ifeq ($(PLATFORM), PLATFORM_STK500_RF2XX)   ####### ATML_STK500 + RF2XX radio platform ####
+  # Checking parameters.
+  ifeq (, $(findstring $(HAL_FREQUENCY), HAL_8MHz HAL_4MHz))
+    $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+  endif
+
+  ifeq (, $(findstring $(RF_EXTENDER), REB230 REB231 REB212))
+    $(error ERROR in file  Makerules: $(RF_EXTENDER) Unknown type of the radio extension board for $(PLATFORM) platform)
+  endif
+
+  ifeq (, $(findstring $(HAL), ATMEGA1281 ATMEGA2561))
+    $(error ERROR in file  Makerules: $(HAL) Unknown type of HAL for $(PLATFORM) platform)
+  endif
+
+  # For platform with 32.768 kHz only.
+  SYSTEM_TIME_ON = SLEEP_TIMER
+  PFLAGS += -DHAL_USE_ASYNC_TIMER
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(PWM), TRUE)
+    PFLAGS += -DHAL_USE_PWM
+  endif
+endif # PLATFORM_STK500_RF2XX
+
+ifeq ($(PLATFORM), PLATFORM_MEGARF)                         ######### MEGARF-based platform #####
+  ifeq (, $(findstring $(HAL_FREQUENCY), HAL_16MHz HAL_8MHz HAL_4MHz))
+    $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+  endif
+
+  ifneq (, $(findstring $(HAL), ATMEGA256RFR2 ATMEGA2564RFR2))
+    ifeq ($(ASYNCHRONOUS_TIMER), TRUE)
+      # For platform with 32.768 kHz only.
+      SYSTEM_TIME_ON = SLEEP_TIMER
+      PFLAGS += -DHAL_USE_ASYNC_TIMER
+    endif
+  else
+    # For platform with 32.768 kHz only.
+    SYSTEM_TIME_ON = SLEEP_TIMER
+    PFLAGS += -DHAL_USE_ASYNC_TIMER
+  endif
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(PC_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_PC_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(PWM), TRUE)
+    PFLAGS += -DHAL_USE_PWM
+  endif
+
+  ifneq (, $(findstring $(HAL), ATMEGA128RFA1 ATMEGA256RFR2 ATMEGA2564RFR2))
+    ifeq ($(HW_AES), TRUE)
+      PFLAGS += -DHAL_USE_HW_AES
+     endif
+     ifeq ($(SPI), TRUE)
+      PFLAGS += -DHAL_USE_SPI
+     endif
+  endif
+endif # PLATFORM_RCB
+
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_TURBO)                   #### ZIGBIT_TURBO platform ####
+  # Setting platform parameters which can not be changed by user.
+  HAL = AT91SAM7X256
+  HAL_FREQUENCY = HAL_48MHz
+
+  # Checking parameters which were set by user.
+  ifeq (, $(findstring $(HAL_CLOCK_SOURCE), CRYSTAL_18d432MHz RF))
+    $(error ERROR in file  Makerules: $(HAL_CLOCK_SOURCE) Unknown clock HAL source for $(PLATFORM) platform)
+  endif
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+endif # PLATFORM_ZIGBIT_TURBO
+
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_LAN)                     ###### ZIGBIT_LAN platform ####
+  # Setting platform parameters which can not be changed by user.
+  HAL = AT91SAM7X256
+  HAL_FREQUENCY = HAL_48MHz
+
+  # Checking parameters which were set by user.
+  ifeq (, $(findstring $(HAL_CLOCK_SOURCE), CRYSTAL_18d432MHz RF))
+    $(error ERROR in file  Makerules: $(HAL_CLOCK_SOURCE) Unknown clock HAL source for $(PLATFORM) platform)
+  endif
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+endif # PLATFORM_ZIGBIT_LAN
+
+ifeq ($(PLATFORM), PLATFORM_SAM7X_EK_RF2XX)     ##### PLATFORM_SAM7X_EK_RF2XX platform ####
+  HAL = AT91SAM7X256
+  HAL_CLOCK_SOURCE = CRYSTAL_18d432MHz
+  HAL_FREQUENCY = HAL_48MHz
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+endif # PLATFORM_SAM7X_EK_RF2XX
+
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_1)             ########### PLATFORM_CUSTOM_1 platform ####
+  HAL = AT91SAM7X256
+  HAL_CLOCK_SOURCE = CRYSTAL_8MHz
+  HAL_FREQUENCY = HAL_48MHz
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+endif # PLATFORM_CUSTOM_1
+
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_2)            #### PLATFORM_CUSTOM_2 platform ####
+  HAL = AT91SAM7X256
+  HAL_CLOCK_SOURCE = CRYSTAL_8MHz
+  HAL_FREQUENCY = HAL_48MHz
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(1WIRE), TRUE)
+    PFLAGS += -DHAL_USE_1WIRE
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+endif # PLATFORM_CUSTOM_2
+
+ifeq ($(PLATFORM), PLATFORM_RF231USBRD)     ##### PLATFORM_RF231USBRD platform ####
+  HAL = AT91SAM3S4C
+  HAL_CLOCK_SOURCE = CRYSTAL_18d432MHz
+  HAL_ASYNC_CLOCK_SOURCE = RC_ASYNC
+  HAL_FREQUENCY = HAL_64MHz
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(HSMCI), TRUE)
+    PFLAGS += -DHAL_USE_HSMCI
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+  ifdef UART
+    PFLAGS += -DHAL_USE_UART
+  endif
+endif # PLATFORM_RF231USBRD
+
+ifeq ($(PLATFORM), PLATFORM_SAM3S_EK_RF2XX)     ##### PLATFORM_SAM3S_EK_RF2XX platform ####
+  HAL = AT91SAM3S4C
+  # For platform with 32.768 kHz only.
+  SYSTEM_TIME_ON = SLEEP_TIMER
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(HSMCI), TRUE)
+    PFLAGS += -DHAL_USE_HSMCI
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+  ifdef UART
+    PFLAGS += -DHAL_USE_UART
+  endif
+endif # PLATFORM_SAM3S_EK_RF2XX
+
+ifeq ($(PLATFORM), PLATFORM_SAMD20_XPLAINED_PRO)     ##### PLATFORM_SAMD20_XPLAINED_PRO platform ####
+  HAL = ATSAMD20J18
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+endif # PLATFORM_SAMD20_XPLAINED_PRO
+
+ifeq ($(PLATFORM), PLATFORM_SAMR21)        ##### PLATFORM_SAMR21 platform ####
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(PWM), TRUE)
+    PFLAGS += -DHAL_USE_PWM
+  endif
+  ifeq ($(SPI), TRUE)
+    PFLAGS += -DHAL_USE_SPI
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+    ifeq ($(USB_TEXT_MODE), TRUE)
+    PFLAGS += -DUSB_TEXT_MODE_SUPPORT
+    endif
+  endif
+  ifeq ($(USB), TRUE)
+    ifeq ($(USB_HOT_PLUG_ENUMERATION), TRUE)
+    PFLAGS += -DHAL_USB_HOT_PLUG_ENUMERATION
+    endif
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+    ifeq ($(EEPROM_EMULATION), TRUE)
+      PFLAGS += -DHAL_USE_EEPROM_EMULATION
+    endif
+  endif
+  ifeq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_32K CRYSTAL_32K))
+    $(error ERROR in file  Makerules: $(HAL_ASYNC_CLOCK_SOURCE) Unknown type of Asynchronous  Clock source for $(PLATFORM) platform)
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(TS), TRUE)
+    PFLAGS += -DHAL_USE_TS
+  endif
+endif # PLATFORM_SAMR21
+
+ifeq ($(PLATFORM), PLATFORM_SAM3S_PIRRD)   ##### PLATFORM_SAM3S_PIRRD platform ####
+  HAL = AT91SAM3S4C
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(HSMCI), TRUE)
+    PFLAGS += -DHAL_USE_HSMCI
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+  ifdef UART
+    PFLAGS += -DHAL_USE_UART
+  endif
+endif # PLATFORM_SAM3S_PIRRD
+
+ifeq ($(PLATFORM), PLATFORM_SAM4S_PIRRD)        ##### PLATFORM_SAM4S_PIRRD platform ####
+  HAL = AT91SAM4S16C
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(HSMCI), TRUE)
+    PFLAGS += -DHAL_USE_HSMCI
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+  ifdef UART
+    PFLAGS += -DHAL_USE_UART
+  endif
+endif # PLATFORM_SAM4S_PIRRD
+
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_3)
+  # AT91SAM3S4B in fact, but changes are negligible
+  HAL = AT91SAM3S4C
+  HAL_FREQUENCY = HAL_64MHz
+  HAL_CLOCK_SOURCE = CRYSTAL_16MHz
+  HAL_ASYNC_CLOCK_SOURCE = RC_ASYNC
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(HSMCI), TRUE)
+    PFLAGS += -DHAL_USE_HSMCI
+  endif
+  ifeq ($(USB), TRUE)
+    PFLAGS += -DHAL_USE_USB
+  endif
+  ifdef UART
+    PFLAGS += -DHAL_USE_UART
+  endif
+endif # PLATFORM_CUSTOM_3
+
+ifeq ($(PLATFORM), PLATFORM_AVR32_EVK1105)     ##### PLATFORM_AVR32_EVK1105 platform ####
+  HAL = AT32UC3A0512
+  HAL_FREQUENCY = HAL_48MHz
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(EXT_INTERRUPT), TRUE)
+    PFLAGS += -DHAL_USE_EXT_IRQ
+  endif
+endif # PLATFORM_AVR32_EVK1105
+
+ifeq ($(PLATFORM), PLATFORM_XPLAIN)   ####### XPLAIN platform ####
+
+  ifneq (, $(findstring $(HAL), ATXMEGA128A1 ATXMEGA128B1))
+    # Checking parameters.
+    ifeq (, $(findstring $(HAL_CLOCK_SOURCE), CRYSTAL_16MHz RC_INTERNAL_32MHz RC_INTERNAL_2MHz))
+      $(error ERROR in file  Makerules: $(HAL_CLOCK_SOURCE) Unknown type of clock source for $(PLATFORM) platform)
+    endif
+
+    # Checking parameters.
+    ifeq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_ULP RC_32K CRYSTAL_32K))
+      $(error ERROR in file  Makerules: $(HAL_ASYNC_CLOCK_SOURCE) Unknown type of asynchronous clock source for $(PLATFORM) platform)
+    endif
+
+    # Set asynchronous clock as system time for platform with 32.768 kHz (RC or crystal).
+    ifneq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_32K CRYSTAL_32K))
+      SYSTEM_TIME_ON = SLEEP_TIMER
+    endif
+
+    ifeq (, $(findstring $(HAL_FREQUENCY), HAL_4MHz HAL_8MHz HAL_12MHz HAL_16MHz HAL_32MHz))
+      $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+    endif
+
+  else
+    $(error ERROR in file  Makerules: $(HAL) Unknown type of HAL for $(PLATFORM) platform)
+  endif
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(SPI), TRUE)
+    PFLAGS += -DHAL_USE_SPI
+  endif
+  ifeq ($(EBI), TRUE)
+    PFLAGS += -DHAL_USE_EBI
+  endif
+endif # PLATFORM_XPLAIN
+
+ifeq ($(PLATFORM), PLATFORM_REB_CBB)   ####### REB CBB platform ####
+  HAL = ATXMEGA256A3
+
+  # Checking parameters.
+  ifeq (, $(findstring $(RF_EXTENDER), REB230 REB231 REB233 REB212))
+    $(error ERROR in file  Makerules: $(HAL_CLOCK_SOURCE)  Unknown type of the radio extension board for $(PLATFORM) platform)
+  endif
+
+  # Checking parameters.
+  ifeq (, $(findstring $(HAL_CLOCK_SOURCE), RC_INTERNAL_32MHz RC_INTERNAL_2MHz))
+    $(error ERROR in file  Makerules: $(HAL_CLOCK_SOURCE) Unknown type of clock source for $(PLATFORM) platform)
+  endif
+
+  # Checking parameters.
+  ifeq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_ULP RC_32K CRYSTAL_32K))
+    $(error ERROR in file  Makerules: $(HAL_ASYNC_CLOCK_SOURCE) Unknown type of asynchronous clock source for $(PLATFORM) platform)
+  endif
+
+  # Set asynchronous clock as system time for platform with 32.768 kHz (RC or crystal).
+  ifneq (, $(findstring $(HAL_ASYNC_CLOCK_SOURCE), RC_32K CRYSTAL_32K))
+    SYSTEM_TIME_ON = SLEEP_TIMER
+  endif
+
+  ifeq (, $(findstring $(HAL_FREQUENCY), HAL_4MHz HAL_8MHz HAL_12MHz HAL_16MHz HAL_32MHz))
+    $(error ERROR in file  Makerules: $(HAL_FREQUENCY) Unknown type of HAL frequency for $(PLATFORM) platform)
+  endif
+
+  ifeq ($(USART), TRUE)
+    PFLAGS += -DHAL_USE_USART
+  endif
+  ifeq ($(WDT), TRUE)
+    PFLAGS += -DHAL_USE_WDT
+  endif
+  ifeq ($(TWI), TRUE)
+    PFLAGS += -DHAL_USE_TWI
+  endif
+  ifeq ($(ADC), TRUE)
+    PFLAGS += -DHAL_USE_ADC
+  endif
+  ifeq ($(EEPROM), TRUE)
+    PFLAGS += -DHAL_USE_EE_READY
+  endif
+  ifeq ($(SPI), TRUE)
+    PFLAGS += -DHAL_USE_SPI
+  endif
+endif # PLATFORM_REB_CBB
+
+ifeq ($(PLATFORM), PLATFORM_SIMULATOR)   ######### Simulator platform #####
+  HAL = SIMULATOR
+  HAL_FREQUENCY = HAL_0MHz
+endif # PLATFORM_SIMULATOR
+
+ifeq ($(PLATFORM), PLATFORM_PC)   ######### PC platform #####
+  HAL_FREQUENCY = HAL_0MHz
+  PFLAGS += -DHAL_USE_USART
+endif # PLATFORM_PC
+
+#-------------------------------------------------------------------------------
+# CPU selection:
+#-------------------------------------------------------------------------------
+ifeq ($(HAL), ATMEGA1281)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atmega1281
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m1281
+  endif
+endif
+ifeq ($(HAL), ATMEGA2561)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atmega2561
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m2561
+  endif
+endif
+ifeq ($(HAL), ATMEGA1284)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atmega1284p
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m1284p
+  endif
+endif
+ifeq ($(HAL), AT90USB1287)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = at90usb1287
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m1287
+  endif
+endif
+ifeq ($(HAL), ATXMEGA128A1)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atxmega128a1
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = xm128a1
+  endif
+endif
+ifeq ($(HAL), ATXMEGA128B1)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atxmega128b1
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = xm128b1
+  endif
+endif
+ifeq ($(HAL), ATXMEGA256A3)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atxmega256a3
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = xm256a3
+  endif
+endif
+ifeq ($(HAL), ATXMEGA256D3)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atxmega256d3
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = xm256d3
+  endif
+endif
+ifeq ($(HAL), AT91SAM7X256)
+  CPU = arm7tdmi
+endif
+ifeq ($(HAL), AT91SAM3S4C)
+  CPU = cortex-m3
+endif
+ifeq ($(HAL), ATSAMD20J18)
+  CPU = cortex-m0+
+endif
+ifeq ($(HAL), ATSAMR21G18A)
+  CPU = cortex-m0+
+endif
+ifeq ($(HAL), ATSAMR21E18A)
+  CPU = cortex-m0+
+endif
+ifeq ($(HAL), ATSAMR21E19A)
+  CPU = cortex-m0+
+endif
+ifeq ($(HAL), AT91SAM4S16C)
+  CPU = Cortex-M4
+endif
+ifeq ($(HAL), ATMEGA128RFA1)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atmega128rfa1
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m128rfa1
+  endif
+endif
+ifeq ($(HAL), ATMEGA256RFR2)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atmega256rfr2
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m256rfr2
+  endif
+endif
+ifeq ($(HAL), ATMEGA2564RFR2)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = atmega2564rfr2
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = m2564rfr2
+  endif
+endif
+ifeq ($(HAL), AT32UC3A0512)
+  ifeq ($(COMPILER_TYPE), GCC)
+    CPU = ???
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    CPU = at32uc3a0512
+  endif
+endif
+ifeq ($(HAL), SIMULATOR)
+  CPU = simulator
+endif
+ifeq ($(HAL), WIN)
+  CPU = win
+endif
+ifndef HAL
+  $(error ERROR in file  Makerules: $(CPU) Unknown type of CPU)
+endif
+
+
+#-------------------------------------------------------------------------------
+# Cross-platform compiler type declaration:
+#-------------------------------------------------------------------------------
+ifndef COMPILER_TYPE
+  $(error ERROR in file  Makerules: $(COMPILER_TYPE) - unknow type of compiler)
+endif
+ifneq (, $(findstring $(HAL), AT91SAM7X256 AT91SAM3S4C AT91SAM4S16C))
+  ifeq ($(COMPILER_TYPE), IAR)
+    CROSS_COMPILER = arm
+  endif
+  ifeq ($(COMPILER_TYPE), GCC)
+    CROSS_COMPILER = arm-none-eabi
+  endif
+endif
+ifneq (, $(findstring $(HAL), ATMEGA1281 ATMEGA2561 ATMEGA1284 AT90USB1287 ATXMEGA128A1 ATXMEGA128B1 ATXMEGA256A3 ATXMEGA256D3 ATMEGA128RFA1 ATMEGA256RFR2 ATMEGA2564RFR2))
+  CROSS_COMPILER = avr
+endif
+ifeq ($(HAL), AT32UC3A0512)
+  CROSS_COMPILER = avr32
+endif
+ifndef CROSS_COMPILER
+  #$(error ERROR in file  Makerules: Cross-platform compiler type is not detected)
+endif
+
+#-------------------------------------------------------------------------------
+# Output options definitions:
+#-------------------------------------------------------------------------------
+ifeq ($(QUIET), TRUE)
+  Q = @
+  SILENT = -s
+
+  AS_MSG      = @echo "$(AS)" $?
+  LD_MSG      = @echo "$(LD)" $@
+  CC_MSG      = @echo "$(CC)" $?
+  CPP_MSG     = @echo "$(CPP)" $?
+  AR_MSG      = @echo "$(AR)" $@
+  NM_MSG      = @echo "$(NM)" $@
+  STRIP_MSG   = @echo "$(STRIP)" $@
+  OBJCOPY_MSG = @echo "$(OBJCOPY)" $@
+  OBJDUMP_MSG = @echo "$(OBJDUMP)" $@
+  SHOW_SIZE   = @echo
+else
+  SHOW_SIZE   = $(SIZE)
+endif
+
+
+#-------------------------------------------------------------------------------
+# Components paths. In each component COMPONENTS_PATH should be defined:
+#-------------------------------------------------------------------------------
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_TURBO)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/arm7tdmi/at91sam7x256/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/arm7tdmi/at91sam7x256/zigBitArm
+endif
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_LAN)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/arm7tdmi/at91sam7x256/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/arm7tdmi/at91sam7x256/zigBitArm
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM7X_EK_RF2XX)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/arm7tdmi/at91sam7x256/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/arm7tdmi/at91sam7x256/atmlEvalKit
+endif
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_1)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/arm7tdmi/at91sam7x256/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/arm7tdmi/at91sam7x256/custom1
+endif
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_2)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/arm7tdmi/at91sam7x256/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/arm7tdmi/at91sam7x256/custom2
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM3S_EK_RF2XX)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm3/at91sam3s4c/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm3/at91sam3s4c/sam3sEK
+endif
+ifeq ($(PLATFORM), PLATFORM_SAMD20_XPLAINED_PRO)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm0+/atsamd20j18/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm0+/atsamd20j18/samd20XplainedPro
+endif
+ifeq ($(PLATFORM), PLATFORM_SAMR21)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm0+/atsamr21/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm0+/atsamr21/common
+endif
+ifeq ($(PLATFORM), PLATFORM_RF231USBRD)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm3/at91sam3s4c/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm3/at91sam3s4c/Rf231UsbRd
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM3S_PIRRD)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm3/at91sam3s4c/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm3/at91sam3s4c/sam3sPIRRD
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM4S_PIRRD)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm3/at91sam4s16c/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm3/at91sam4s16c/sam4sPIRRD
+endif
+
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_3)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/cortexm3/at91sam3s4c/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/cortexm3/at91sam3s4c/custom3
+endif
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega1281/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega1281/zigBit
+endif
+ifeq ($(PLATFORM), PLATFORM_RAVEN)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega1284/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega1284/raven
+endif
+ifeq ($(PLATFORM), PLATFORM_STK600)
+  ifeq ($(HAL), ATMEGA128RFA1)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega128rfa1/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega128rfa1/common
+  endif
+  ifeq ($(HAL), ATMEGA256RFR2)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega128rfa1/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega128rfa1/common
+  endif
+  ifeq ($(HAL), ATMEGA2564RFR2)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega128rfa1/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega128rfa1/common
+  endif
+  ifeq ($(HAL), ATXMEGA128A1)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/xmega/atxmega128a1/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/xmega/atxmega128a1/stk600
+  endif # ATXMEGA128A1
+  ifeq ($(HAL), ATXMEGA256A3)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/xmega/atxmega256a3/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/xmega/atxmega256a3/stk600
+  endif # ATXMEGA256A3
+  ifeq ($(HAL), ATXMEGA256D3)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/xmega/atxmega256d3/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/xmega/atxmega256d3/stk600
+  endif # ATXMEGA256D3
+endif # PLATFORM_STK600
+ifeq ($(PLATFORM), PLATFORM_STK500_RF2XX)
+  ifneq (, $(findstring $(RF_EXTENDER), REB230))
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega1281/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega1281/rcb230
+  endif
+  ifneq (, $(findstring $(RF_EXTENDER), REB231 REB212))
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega1281/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega1281/rcb231_212
+  endif
+endif
+ifeq ($(PLATFORM), PLATFORM_ATML_USB_DONGLE)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/at90usb1287/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/avr/at90usb1287/usbDongle
+endif
+ifeq ($(PLATFORM), PLATFORM_MEGARF)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr/atmega128rfa1/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/avr/atmega128rfa1/common
+endif
+ifeq ($(PLATFORM), PLATFORM_AVR32_EVK1105)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/avr32/uc32a0512/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/avr32/uc32a0512/evk1105
+endif
+ifeq ($(PLATFORM), PLATFORM_XPLAIN)
+  ifeq ($(HAL), ATXMEGA128A1)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/xmega/atxmega128a1/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/xmega/atxmega128a1/xplain
+  endif # ATXMEGA128A1
+  ifeq ($(HAL), ATXMEGA128B1)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/xmega/atxmega128b1/common
+    HAL_MAC_API_PATH    = $(HAL_PATH)/xmega/atxmega128b1/xplain
+  endif # ATXMEGA128B1
+endif # PLATFORM_XPLAIN
+ifeq ($(PLATFORM), PLATFORM_REB_CBB)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/xmega/atxmega256a3/common
+  HAL_MAC_API_PATH    = $(HAL_PATH)/xmega/atxmega256a3/stk600
+endif # PLATFORM_REB_CBB
+ifeq ($(PLATFORM), PLATFORM_SIMULATOR)
+  HAL_HWD_COMMON_PATH = $(HAL_PATH)/simulator
+  HAL_MAC_API_PATH    = $(HAL_PATH)/simulator
+endif #PLATFORM_SIMULATOR
+ifeq ($(PLATFORM), PLATFORM_PC)
+  ifeq ($(HAL), WIN)
+    HAL_HWD_COMMON_PATH = $(HAL_PATH)/pc/windows
+  endif
+  HAL_MAC_API_PATH    = $(HAL_PATH)/pc
+endif #PLATFORM_PC
+ifndef HAL_HWD_COMMON_PATH
+  $(error ERROR in file  Makerules: unknown or unsupported platform)
+endif
+ifndef HAL_MAC_API_PATH
+  $(error ERROR in file  Makerules: unknown or unsupported platform)
+endif
+
+#-------------------------------------------------------------------------------------
+# Stack library name definition.
+#-------------------------------------------------------------------------------------
+ifeq ($(COMPILER_TYPE), IAR)
+  LIB_NAME_COMPILER = _Iar
+endif
+ifeq ($(COMPILER_TYPE), GCC)
+  LIB_NAME_COMPILER = _Gcc
+endif
+
+ifeq ($(HAL_FREQUENCY), HAL_0MHz)
+  LIB_NAME_HAL_FREQ = _0Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_4MHz)
+  LIB_NAME_HAL_FREQ = _4Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_8MHz)
+  LIB_NAME_HAL_FREQ = _8Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_12MHz)
+  LIB_NAME_HAL_FREQ = _12Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_16MHz)
+  LIB_NAME_HAL_FREQ = _16Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_18d432MHz)
+  LIB_NAME_HAL_FREQ = _18_432MHz
+else ifeq ($(HAL_FREQUENCY), HAL_24MHz)
+  LIB_NAME_HAL_FREQ = _24Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_32MHz)
+  LIB_NAME_HAL_FREQ = _32Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_48MHz)
+  LIB_NAME_HAL_FREQ = _48Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_64MHz)
+  LIB_NAME_HAL_FREQ = _64Mhz
+else ifeq ($(HAL_FREQUENCY), HAL_120MHz)
+  LIB_NAME_HAL_FREQ = _120Mhz
+endif
+
+
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT)
+  HAL_LIB_NAME_PLATFORM = _ZigBit
+endif
+ifeq ($(PLATFORM), PLATFORM_RAVEN)
+  HAL_LIB_NAME_PLATFORM = _Raven
+endif
+ifeq ($(PLATFORM), PLATFORM_ATML_USB_DONGLE)
+  HAL_LIB_NAME_PLATFORM = _AtmlUsbDongle
+endif
+ifeq ($(PLATFORM), PLATFORM_STK600)
+  HAL_LIB_NAME_PLATFORM = _AtmlStk600
+endif
+ifeq ($(PLATFORM), PLATFORM_STK500_RF2XX)
+  HAL_LIB_NAME_PLATFORM = _AtmlStk500Rf2xx
+endif
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_TURBO)
+  HAL_LIB_NAME_PLATFORM = _ZigBitTurbo
+endif
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_LAN)
+  HAL_LIB_NAME_PLATFORM = _ZigBitLan
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM7X_EK_RF2XX)
+  HAL_LIB_NAME_PLATFORM = _Sam7xEkRf2xx
+endif
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_1)
+  HAL_LIB_NAME_PLATFORM = _Custom1
+endif
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_2)
+  HAL_LIB_NAME_PLATFORM = _Custom2
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM3S_EK_RF2XX)
+  HAL_LIB_NAME_PLATFORM = _Sam3sEkRf2xx
+endif
+ifeq ($(PLATFORM), PLATFORM_SAMD20_XPLAINED_PRO)
+  HAL_LIB_NAME_PLATFORM = _Samd20XplainedPro
+endif
+ifeq ($(PLATFORM), PLATFORM_SAMR21)
+  HAL_LIB_NAME_PLATFORM = _Samr21
+endif
+ifeq ($(PLATFORM), PLATFORM_RF231USBRD)
+  HAL_LIB_NAME_PLATFORM = _Rf231UsbRd
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM3S_PIRRD)
+  HAL_LIB_NAME_PLATFORM = _Sam3sPirrd
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM4S_PIRRD)
+  HAL_LIB_NAME_PLATFORM = _Sam4sPirrd
+endif
+ifeq ($(PLATFORM), PLATFORM_CUSTOM_3)
+  HAL_LIB_NAME_PLATFORM = _Custom3
+endif
+ifeq ($(PLATFORM), PLATFORM_MEGARF)
+  HAL_LIB_NAME_PLATFORM = _MegaRf
+endif
+ifeq ($(PLATFORM), PLATFORM_AVR32_EVK1105)
+  HAL_LIB_NAME_PLATFORM = _Avr32Evk1105
+endif
+ifeq ($(PLATFORM), PLATFORM_XPLAIN)
+  HAL_LIB_NAME_PLATFORM = _Xplain
+endif
+ifeq ($(PLATFORM), PLATFORM_REB_CBB)
+  ifneq (, $(findstring $(RF_EXTENDER), REB230))
+    HAL_LIB_NAME_PLATFORM = _RebCbb230
+  endif
+  ifneq (, $(findstring $(RF_EXTENDER), REB231 REB233 REB212))
+    HAL_LIB_NAME_PLATFORM = _RebCbb231_212
+  endif
+endif
+ifeq ($(PLATFORM), PLATFORM_SIMULATOR)
+  HAL_LIB_NAME_PLATFORM = _Sim
+endif
+ifeq ($(PLATFORM), PLATFORM_PC)
+  HAL_LIB_NAME_PLATFORM = _Pc
+endif
+
+ifeq ($(HAL), ATMEGA1281)
+  LIB_NAME_MICRO = _Atmega1281
+endif
+ifeq ($(HAL), ATMEGA2561)
+  LIB_NAME_MICRO = _Atmega2561
+endif
+ifeq ($(HAL), ATMEGA1284)
+  LIB_NAME_MICRO = _Atmega1284
+endif
+ifeq ($(HAL), AT90USB1287)
+  LIB_NAME_MICRO = _At90usb1287
+endif
+ifeq ($(HAL), ATXMEGA128A1)
+  LIB_NAME_MICRO = _Atxmega128a1
+endif
+ifeq ($(HAL), ATXMEGA128B1)
+  LIB_NAME_MICRO = _Atxmega128b1
+endif
+ifeq ($(HAL), ATXMEGA256A3)
+  LIB_NAME_MICRO = _Atxmega256a3
+endif
+ifeq ($(HAL), ATXMEGA256D3)
+  LIB_NAME_MICRO = _Atxmega256d3
+endif
+ifeq ($(HAL), ATMEGA128RFA1)
+  LIB_NAME_MICRO = _Atmega128rfa1
+endif
+ifeq ($(HAL), ATMEGA256RFR2)
+  LIB_NAME_MICRO = _Atmega256rfr2
+endif
+ifeq ($(HAL), ATMEGA2564RFR2)
+  LIB_NAME_MICRO = _Atmega2564rfr2
+endif
+ifeq ($(HAL), AT91SAM7X256)
+  LIB_NAME_MICRO = _At91sam7x256
+endif
+ifeq ($(HAL), AT91SAM3S4C)
+  LIB_NAME_MICRO = _Atsam3s4c
+endif
+ifeq ($(HAL), ATSAMD20J18)
+  LIB_NAME_MICRO = _Atsamd20j18
+endif
+ifeq ($(HAL), ATSAMR21G18A)
+  LIB_NAME_MICRO = _Atsamr21g18a
+endif
+ifeq ($(HAL), ATSAMR21E18A)
+  LIB_NAME_MICRO = _Atsamr21e18a
+endif
+ifeq ($(HAL), ATSAMR21E19A)
+  LIB_NAME_MICRO = _Atsamr21e19a
+endif
+ifeq ($(HAL), AT91SAM4S16C)
+  LIB_NAME_MICRO = _Atsam4s16c
+endif
+ifeq ($(HAL), AT32UC3A0512)
+  LIB_NAME_MICRO = _At32uc3a0512
+endif
+ifeq ($(HAL), SIMULATOR)
+  LIB_NAME_MICRO = _Sim
+endif
+ifeq ($(HAL), WIN)
+  LIB_NAME_MICRO = _Win
+endif
+
+ifeq ($(HAL_USE_AMPLIFIER), TRUE)
+  LIB_NAME_AMP = _Amp
+endif
+
+
+STACK_LIB = $(LIB_NAME_MICRO)$(LIB_NAME_COMPILER)
+
+ifndef STACK_LIB
+  $(error ERROR: Build target is not defined)
+endif
+
+include $(STACK_LIB_PATH)/Makerules$(STACK_LIB)
+
+HAL_LIB = HAL$(HAL_LIB_NAME_PLATFORM)$(LIB_NAME_MICRO)$(LIB_NAME_HAL_FREQ)$(LIB_NAME_COMPILER)$(LIB_NAME_AMP)
+
+#-------------------------------------------------------------------------------
+# Compiler flags: platforms parameters and features
+#-------------------------------------------------------------------------------
+CFLAGS += -D$(HAL)
+CFLAGS += -D$(PLATFORM)
+CFLAGS += -D$(OS)
+ifdef HAL_FREQUENCY
+  CFLAGS += -D$(HAL_FREQUENCY)
+endif
+ifdef HAL_CLOCK_SOURCE            ####### For platforms with different main clock sources ####
+  CFLAGS += -D$(HAL_CLOCK_SOURCE)
+endif
+ifdef HAL_ASYNC_CLOCK_SOURCE      ####### For platforms with different asyncronous clock sources ####
+  CFLAGS += -D$(HAL_ASYNC_CLOCK_SOURCE)
+endif
+ifeq ($(PLATFORM), PLATFORM_RCB)   ####### RCB platform ####
+  CFLAGS += -D$(PLATFORM_REV)
+endif
+ifdef RF_EXTENDER                  ####### RF extension boards type for REB CBB & STK600 ####
+  CFLAGS += -D$(RF_EXTENDER)
+endif
+ifeq ($(HAL_USE_AMPLIFIER), TRUE)   #### enable amplifier for zigbit platform  ####
+  CFLAGS += -D_HAL_USE_AMPLIFIER_
+endif
+ifeq ($(HAL_RF_RX_TX_INDICATOR), TRUE)  #### enable RF_RX_TX_INDICATOR ####
+  CFLAGS += -D_HAL_RF_RX_TX_INDICATOR_
+endif
+ifeq ($(HAL_ANT_DIVERSITY), TRUE)  #### enable Antenna diversity ####
+  CFLAGS += -D_HAL_ANT_DIVERSITY_
+endif
+ifeq ($(INTERNAL_FLASH_ACCESS), TRUE) #### enable Internal flash access ####
+  CFLAGS += -DHAL_USE_FLASH_ACCESS
+endif
+ifeq ($(USE_NONSTD_ST_RELOAD_INTERVAL), TRUE) #### enable Nonstandard sleep timer reload interval ####
+  CFLAGS += -DHAL_USE_SLEEP_TIMER_RELOAD_PERIOD
+endif
+ifeq ($(STACK_TYPE), ZGPDEVICE)   #### enable zgp related changes  ####
+  CFLAGS += -D_ZGPD_SPECIFIC_
+endif
+#-------------------------------------------------------------------------------
+# Compiler flags: switch on enabled peripheries
+#-------------------------------------------------------------------------------
+CFLAGS += $(PFLAGS)
+
+#-------------------------------------------------------------------------------
+# Compiler flags: special periphery parameters and modes
+#-------------------------------------------------------------------------------
+ifeq ($(HAL_USE_USART_ERROR_EVENT), TRUE)  #### enable usart error handler ####
+  CFLAGS += -D_USE_USART_ERROR_EVENT_
+endif
+ifeq ($(HAL_USE_USB_ERROR_EVENT), TRUE)  #### enable usb error handler ####
+  CFLAGS += -D_USE_USB_ERROR_EVENT_
+endif
+ifeq ($(HAL_RF_DEEP_SLEEP), TRUE)  #### enable Deep sleep for supported transceivers ####
+  CFLAGS += -D_HAL_RF_DEEP_SLEEP_
+endif
+ifeq ($(HAL_USE_PIRRD_SPECIAL_SLEEP), TRUE) #### Special sleep mode for WPIRDemo application
+  CFLAGS += -D_HAL_USE_PIRRD_SPECIAL_SLEEP_
+endif
+
+#-------------------------------------------------------------------------------
+# UART HW support compiler flags.
+# AVR platforms support only UART channel 1 hardware control.
+# ARM platforms support both UART channels hardware control.
+#-------------------------------------------------------------------------------
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_LAN)
+  CFLAGS += -D_UART_0_HW_CONTROL_
+endif
+ifeq ($(PLATFORM), PLATFORM_SAM7X_EK_RF2XX)
+  CFLAGS += -D_UART_0_HW_CONTROL_
+endif
+ifeq ($(PLATFORM), PLATFORM_ZIGBIT_TURBO)
+  CFLAGS += -D_UART_0_HW_CONTROL_
+endif
+
+#-------------------------------------------------------------------------------
+# Compiler flags for debug info:
+#-------------------------------------------------------------------------------
+ifeq ($(BUILD_CONFIGURATION), DEBUG)
+  ifeq ($(COMPILER_TYPE), IAR)
+    CFLAGS += --debug
+  endif
+  ifeq ($(COMPILER_TYPE), GCC)
+    CFLAGS += -g
+  endif
+endif # DEBUG
+
+#-------------------------------------------------------------------------------
+# Check compiler version:
+#-------------------------------------------------------------------------------
+ifeq ($(COMPILER_TYPE), GCC)
+  COMPILER_VERSION = $(strip $(shell $(CC) -v 2>&1 | grep 'gcc version'))
+endif
+ifeq ($(COMPILER_TYPE), IAR)
+  COMPILER_VERSION = $(strip $(shell $(CC) | grep 'C/C++ Compiler V'))
+endif
+
+ifeq ($(COMPILER_AND_MICRO_TYPE), GCC_AVR)
+  EXP_VERSION = gcc version 4.8.1 (AVR_8_bit_GNU_Toolchain_3.4.5_1522)
+else ifeq ($(COMPILER_AND_MICRO_TYPE), IAR_AVR)
+  EXP_VERSION = IAR C/C++ Compiler V6.60.2.843 for Atmel AVR
+else ifeq ($(COMPILER_AND_MICRO_TYPE), GCC_ARM)
+  EXP_VERSION = gcc version 4.8.4 20140725 (release) [ARM/embedded-4_8-branch revision 213147] (Atmel build: 371)
+else ifeq ($(COMPILER_AND_MICRO_TYPE), IAR_ARM)
+  EXP_VERSION = IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM
+else ifeq ($(COMPILER_AND_MICRO_TYPE), IAR_AVR32)
+  EXP_VERSION = IAR C/C++ Compiler V3.30.1.40051/W32 for Atmel AVR32
+else ifeq ($(COMPILER_AND_MICRO_TYPE), GCC_X86)
+  UNAME := $(shell uname)
+  ifeq ($(UNAME), Linux)
+    EXP_VERSION = gcc version 4.6.1 (Ubuntu/Linaro 4.6.1-9ubuntu3)
+  else
+    EXP_VERSION = gcc version 4.7.2 (GCC)
+  endif
+else
+  $(error unsupported COMPILER_AND_MICRO_TYPE)
+endif
+
+ifneq ($(EXP_VERSION), $(COMPILER_VERSION))
+  $(error ERROR in file Makerules: You are using incorrect version of compiler: \
+    installed $(COMPILER_VERSION), expected $(EXP_VERSION))
+endif
+
+ifeq ($(COMPILER_TYPE), IAR)
+  COMPILER_TYPE_LOWER_CASE = _Iar
+else
+  COMPILER_TYPE_LOWER_CASE = _Gcc
+endif # COMPILER_TYPE
+
+ifeq ($(HAL), ATMEGA1281)
+  WDT_INIT_OBJ=WdtInitatmega1281$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), ATMEGA2561)
+  WDT_INIT_OBJ=WdtInitatmega2561$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), ATMEGA1284)
+  WDT_INIT_OBJ=WdtInitatmega1284$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), AT90USB1287)
+  WDT_INIT_OBJ=WdtInitat90usb1287$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), ATMEGA128RFA1)
+  WDT_INIT_OBJ=WdtInitatmega128rfa1$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), ATMEGA256RFR2)
+  WDT_INIT_OBJ=WdtInitatmega256rfr2$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), ATMEGA2564RFR2)
+  WDT_INIT_OBJ=WdtInitatmega2564rfr2$(COMPILER_TYPE_LOWER_CASE).o
+endif
+ifeq ($(HAL), AT91SAM7X256)
+  ifeq ($(OS), FREE_RTOS)
+    FREE_RTOS_LIB=FreeRTOSat91sam7x256
+  endif
+  ifeq ($(COMPILER_TYPE), GCC)
+    ifeq ($(OS), FREE_RTOS)
+      BOOT_OBJ = $(LIBDIR)/FreertosBoot$(COMPILER_TYPE_LOWER_CASE).o
+    endif
+    ifeq ($(OS), NONE_OS)
+      BOOT_OBJ = $(LIBDIR)/FirmwareBoot$(COMPILER_TYPE_LOWER_CASE).o
+    endif
+  endif
+  ifeq ($(COMPILER_TYPE), IAR)
+    ifeq ($(OS), FREE_RTOS)
+    endif
+    ifeq ($(OS), NONE_OS)
+      BOOT_OBJ = $(LIBDIR)/FirmwareBoot$(COMPILER_TYPE_LOWER_CASE).o
+    endif
+  endif
+endif

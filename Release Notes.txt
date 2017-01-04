@@ -1,0 +1,295 @@
+Release Notes
+=============
+BitCloud SDK
+Date : September, 2015
+
+I. Scope
+========
+This document lists implemented features, resolved defects, known limitations and planned improvements for this software release version.
+
+II. Products/configurations
+===========================
+BitCloud SDK package includes the following software:
+- BitCloud ZigBee PRO stack (libraries + headers)
+- ZLL, ZHA and OEM reference applications
+- ZAppSI support with network processor and host applications
+- ZLL certification test suite
+
+Full description of SDK content, supported platforms, minimum system requirements and
+pre-requisites is given in AVR2052 BitCloud SDK Quick Start Guide (see Documentation folder)
+
+For any questions, please logon to http://www.atmel.com/design-support/
+
+III. Revision History
+===================
+The list is not complete and covers only major additions and fixes comparing to the previous releas(i.e.,BitCloud SDK v3.2.0)
+
+BitCloud SDK v3.3.0
+===================
+** Major new features
+    * [BCZPRO-2258] - To support SAMR21E19 Device as part of Bitcloud system along with SDK Application Porting
+    * [BCZPRO-2260] - To support SAMR21G18 Module Device as part of BitCloud system along with SDK Application Porting
+    * [BCZPRO-2259] - To support SAMR21B18 Module Device as part of BitCloud system along with SDK Application Porting
+    * [BCZPRO-1965] - USB Driver Implementation on SAMR21
+    * [BCZPRO-1990] - BitCloud SDK Application integration with USB
+    * [BCZPRO-670]  - Integrate Qtouch library into BitCloud SDK for SAMR21
+    * [BCZPRO-1407] - To Support/Integrate Qtouch on ZLL Remote
+    * [BCZPRO-1768] - Add pin change interrupt (PCINT) support in RFR2 HAL
+
+
+** Major improvements and bug fixes
+    * [BCZPRO-2629] - BC_EVENT_PARENT_LINK_FAILURE event shall not be posted for Tx failures with MAC_CHANNEL_ACCESS_FAILURE_STATUS (0xE1) status
+    * [BCZPRO-2034] - Clocking SAMR21 System using Transceiver Clock (CLKM)
+    * [BCZPRO-361]  - Serial/OTA bootloader doesn't support GCC applications above 128K flash
+    * [BCZPRO-2542] - Support 32Mhz Clock using CLKM and XOSC32 configuration for SAMR21x
+    * [BCZPRO-2600] - End device sometimes stops sending ZCL messages from bound clusters after parent change
+    * [BCZPRO-2599] - Sending ZCL messages blocks when addressing many non powered devices
+    * [BCZPRO-2571] - HARD RESET is must in MCU Board after flashing using JTAGICE in BOARD_SAMR21G18_MR210UA_MODULE
+    * [BCZPRO-2531] - To increase APP_UART_TX_BUFFER_SIZE in ZHA Application for displaying the Menu Completely
+    * [BCZPRO-2510] - Upgrade IAR AVR and ARM Tool Chains to latest versions
+    * [BCZPRO-2352] - Add support for ZDP messages sent to 0xFF (broadcast) endpoint
+    * [BCZPRO-2340] - CCA mode and ED level to be configurable
+    * [BCZPRO-2224] - N_Radio_SetCarrier() doesn't use transmit power set via N_Radio_SetTxPower()
+    * [BCZPRO-2213] - Endpoint information during touchlink depends on simple descriptor initialization order
+    * [BCZPRO-2198] - SAMR21 assert while sending many messages
+    * [BCZPRO-1966] - Ez-Mode:Optimize the EZMode Commissioning Procedure
+    * [BCZPRO-2186] - CCB#2032 Support
+    * [BCZPRO-2185] - CCB#2012 Support
+    * [BCZPRO-2184] - CCB#2011 Support
+    * [BCZPRO-2183] - CCB#1608 Support
+    * [BCZPRO-2182] - CCB#1987 Support
+    * [BCZPRO-2162] - OTAU cluster on IAS ACE device shall be client
+    * [BCZPRO-2159] - End device keeps on asserting after router switched off during touchlink
+    * [BCZPRO-2151] - GEN2 sync. issue when driving peripherals from CLKM
+    * [BCZPRO-2119] - Rejoining happens frequently while OTAU upgrade with page requests is in process
+    * [BCZPRO-2109] - Re-design of S_Nv component for NV robustness
+    * [BCZPRO-2107] - Binding table shall be cleared when joining a new network
+    * [BCZPRO-2106] - N_Radio_SetCarrier sometimes causes a hang-up on SAMR21
+    * [BCZPRO-2105] - Address map table shall not be cleared on rejoin to the same network
+    * [BCZPRO-2104] - N_Connection_ReconnectUrgent() called while not entering network
+    * [BCZPRO-2100] - Missing NULL check in N_Connection_SetInterPanModeOn function
+    * [BCZPRO-2099] - Assert on receiving MgmtLqiResp with multiple entries
+    * [BCZPRO-2059] - codeBlocksPrj directory is missing in HADevice application
+    * [BCZPRO-2052] - Internal NV on SAMR21 is sometimes corrupted after resetting
+    * [BCZPRO-2050] - Assert 0x8000 is sometimes seen during OTAU upgrade
+    * [BCZPRO-2046] - N_Zdp_GetSourceAddress is expected to return short address
+    * [BCZPRO-2031] - Incorrect TOUCHLINK_ZERO_DBM_TX_POWER for SAMR21
+    * [BCZPRO-2028] - Few button functions in RCB_KEY_REMOTE do not Work
+    * [BCZPRO-2027] - SAMR21E18A- Keep RC_32K as default async clock source
+    * [BCZPRO-2019] - Compilation issues with BSP_SUPPORT kept as BOARD_FAKE
+    * [BCZPRO-2006] - Combine N_Hac and N_PacketDistributor
+    * [BCZPRO-2026] - Remote Power Off Command Support in ZLL
+    * [BCZPRO-1995] - Need console command support to get application devices type info in HA
+    * [BCZPRO-1958] - console command support is required for SimpleDescReq & Match DescReq
+    * [BCZPRO-1957] - console command getNetworkAddress is required for Dimmable Light & Dimmer Switch
+    * [BCZPRO-1564] - Default value for CS_MAC_TRANSACTION_TIME shall be set to 7680L
+    * [BCZPRO-1566] - Provide stack configuration for Tx power on channel 26
+    * [BCZPRO-1075] - PWM Top value is calculated wrongly in HAL due to wrong pre-scalar
+    * [BCZPRO-1035] - Light turned OFF for the SLRemote border color controls
+    * [BCZPRO-1638] - LED status does not work in precompiled ZLLDemo light image for SAMR21-XPRO
+    * [BCZPRO- 944] - PWM frequency is not matching the APP_PWM_FREQUENCY setting
+    * [BCZPRO-2617] - Sometimes SAMR21 device infinitely resends unicast frame
+    * [BCZPRO-2642] - [WSN_GCC]-Invalid image status is seen in Upgrade End Request
+    * [BCZPRO-2518] - Implement N_Radio_Disable
+    * [BCZPRO-2517] - Add N_Task_GetNumberOfEventHandlers to count task handlers
+    * [BCZPRO-2723] - No reporting and fast polling in ColorSceneRemote(ZLLDemo) application
+    * [BCZPRO-2728] - Incorrect report intervals for some attributes when device has several reportable attributes
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+BitCloud SDK v3.2.0
+
+** Major new features
+    * [BCZPRO-1232] - Implementation of ZHA thermostat device
+    * [BCZPRO-1274] - Implementation of IAS (Intruder Alarm System) ACE ( Ancillary Control Equipment) device type
+    * [BCZPRO-1563] - Implementation of IAS CIE  functionalities within CI (Combined Interface)
+    * [BCZPRO-436]  - Improving OTA behavior by redefining OTA state machine and addressing all corner/use-cases
+    * [BCZPRO-740]  - Support additional optional Basic cluster attributes and reset to FN command
+    * [BCZPRO-842]  - Implementation ZCL Discover Commands
+    * [BCZPRO-1283] - Implementation of  ZCL Discover Attributes Extended
+    * [BCZPRO-839]  - Implementation of Power Configuration cluster
+    * [BCZPRO-840]  - Implementation of Diagnostics cluster
+    * [BCZPRO-1456] - EEPROM emulation feature addition on SAMR21
+    * [BCZPRO-1362] - Assert implementation phase - 2
+
+** Major improvements and bug fixes
+    * [BCZPRO-1760] - Migrate to IAR for ARM v7.30.1.7746/W32 , Migrate to IAR for AVR v6.40.2.748 ,
+                      GCC ARM Tool-chain - gcc version 4.8.4 20140725 (release) [ARM/embedded-4_8-branch revision 213147] (Atmel build:                              371)
+    * [BCZPRO-1642] - Reporting was not configured for the second ezCommissioning device
+    * [BCZPRO-1562] - Pre compiled images for SAMR21 shall be programmed with Atmel Studio ( Support added for hex files and removed bin                             files)
+    * [BCZPRO-1547] - ED goes to deep sleep when the AppTimer/Sleep Timer value is less than 32ms
+    * [BCZPRO-1536] - Expiration of BTT too fast : casing invalid address conflicts
+    * [BCZPRO-1513] - ZLL Add Group command shall take groupId from the given range
+    * [BCZPRO-1492] - Device doesn't not terminate its identification procedure even after receiving IdentifyTime with the value 0
+    * [BCZPRO-1441] - Nwk Leave not sent during 10c. TP-PRE-TC-02 test case in ZLL test spec
+    * [BCZPRO-1419] - Parent sends empty link-status after child touch-links a FN device
+    * [BCZPRO-1287] - Router/End device does not join to coordinator when PDS is enabled on WSNDemo application
+    * [BCZPRO-1239] - Remote is continuously polling the data request after parent lost
+    * [BCZPRO-1235] - LED behavior changed accordingly after touch link when we reset Light immediately and initiate On/Off command
+    * [BCZPRO-1226] - UART response is slow when WDT is enabled
+    * [BCZPRO-1219] - N_Radio/MAC_PHY registers ZLL simplification changes
+    * [BCZPRO-1210] - Fragmentation with fixed block size , not working
+    * [BCZPRO-1195] - CS_APS_BLOCK_SIZE not impacting the size of the transmitted data frame
+    * [BCZPRO-1189] - OTA Upgrade of Light is not successful always in touchlink network
+    * [BCZPRO-1157] - Incorrect implementation of Get Group Membership command
+    * [BCZPRO-1027] - In ATmega256RFR2/ATmega2564RFR2, HAL_ReadEeprom/HAL_WriteEeprom function cannot access more than 4K memory
+    * [BCZPRO-1716] - Handling of configure reporting in multisensor changed
+    * [BCZPRO-1454] - To Include ZLO endpoints in touchlink sequence
+    * [BCZPRO-335]  - OTA bootloader - write to internal EEPROM - ~100 seconds
+    * [BCZPRO-421]  - Keep manufacturer code only in an application header file and remove check for MESHNETICS_ID And ATMEL_ID in zcl
+    * [BCZPRO-1188] - ZCL is not able to handle full-size frames (127 Bytes at PHY)
+    * [BCZPRO-1270] - HA Ez-Mode: CI shall simultaneously act both as initiator and target
+    * [BCZPRO-1377] - Support valid range check in ZCL for supported attributes
+    * [BCZPRO-1455] - Enhance use of antenna diversity in the stack; allow application control.
+    * [BCZPRO-1472] - Device to reset to its Factory New state if Network Leave Command received over the air( As part of Certification Fix)
+    * [BCZPRO-1490] - Device hangs in unknown state while registering multiple interrupts for SAMR21
+    * [BCZPRO-1514] - ZLL remote doesn't rejoin the network on other channel on power up
+    * [BCZPRO-1774] - Combined Interface hang issue during multiple configuring reporting from Dimmable Light
+    * [BCZPRO-1687] - ZLL remote fails to rejoin the network if parents are not available for several scan attempts
+    * [BCZPRO-431]  - Device returns no error when set maxReportingInterval < minReportingInterval using Configure Reporting
+    * [BCZPRO-1079] - resetToFN button is not working in ZLLDemo for SAMR21-XPRO and 256RFR2-XPRO
+    * [BCZPRO-1036] - HAL_StopWriteToEeprom implementation for SAMR21
+    * [BCZPRO-1207] - Porting of N-Radio/Component for SAMR21
+    * [BCZPRO-1732] - resetToFN console command doesnot clear Security frame counter in ZLLDemo application but HA demo clears
+    * [BCZPRO-1648] - Unable to recall a scene for the second time after multiple scenes added in Light
+    * [BCZPRO-1524] - CLSN-Pro profile ID support removed from the ZLL platform
+    * [BCZPRO-1667] - BTT expiry timer which was started by EndDevice when it transmits a broadcast packet , fixed as per ZigBee Specification
+    * [BCZPRO-1853] - SAMR21 router device becomes unresponsive in a large network test which consists of more than 50+ nodes
+    * [BCZPRO-1115] - SAMR21 ZLL Remote failed to control light devices in a long duration tests
+
+-------------------------------------------------------------------
+BitCloud SDK v3.1.0
+** Major new features
+    * [BCZPRO-475]  - Support added for new MCU-SAMR21
+    * [BCZPRO-722]  - Multi-Sensor - Implement Temperature sensor functionality
+    * [BCZPRO-723]  - Multi-Sensor - Implement Relative Humidity sensor functionality devices
+    * [BCZPRO-724]  - Multi-Sensor - Implement Light Sensor functionality
+    * [BCZPRO-770]  - GCC compiler support for ZLL demo application
+    * [BCZPRO-644]  - Multiple CCBs added as per ZLL 1.0 spec -
+	                  CCB included : 1555,1744, 1557, 1596, 1575, 1585, 1601, 1657, 1658, 1683, 1816, , 1791, 1659, 1587, 1651, 1672, 1680, 1799, 1760, 1917, 1937, 1966
+    * [BCZPRO-700]  - Assert implementation phase - 1
+    * [BCZPRO-875]  - Added secure bootloader support to all ref. applications with OTA
+
+** Major improvements and bug fixes
+    * [BCZPRO-639]  - Migrate to IAR for ARM v7.20
+    * [BCZPRO-640]  - Migrate to IAR for AVR v6.40
+    * [BCZPRO-888]  - Migrate to GCC of Atmel Studio 6.2.1153
+    * [BCZPRO-463]  - NWK Link Status messages not sent in large networks
+    * [BCZPRO-483]  - End-device hangs without assert after receiving Configure Reporting command
+    * [BCZPRO-491]  - Device hangs when ZCL_StartReporting() is called after an entry is added in binding table for the cluster with ZCL_CLUSTER_SIDE_CLIENT
+    * [BCZPRO-550]  - Incorrect settings of profileID and version fields in ZLL interpan messages
+    * [BCZPRO-551]  - ZLL Light shall not be a touchlink initiator
+    * [BCZPRO-553]  - Add deviceAnnce transmission after touchlink
+    * [BCZPRO-557]  - blockRequestDelayPresent bit is set incorrectly
+    * [BCZPRO-558]  - Ensure that reserved bits are set to 0 for ZCL frames
+    * [BCZPRO-561]  - Support both ZHA and ZLL profile IDs on a ZLL endpoint
+    * [BCZPRO-587]  - Sometimes device sends poll requests continuously and does not go to sleep when external interrupt is triggered
+    * [BCZPRO-631]  - NWK security InFrameCounter is not getting cleared when receiving leave notification
+    * [BCZPRO-669]  - TWI implementation is incorrect
+    * [BCZPRO-824]  - HA end device keeps sending the MACBeaconreq when the parent is lost
+    * [BCZPRO-827]  - ZDO_MgmtNwkUpdateNotf() is not invoked for ZDO_CHILD_REMOVED_STATUS
+    * [BCZPRO-956]  - OTA Switch Upgrade end request not sent as End device fails to Poll Parent
+    * [BCZPRO-958]  - WSN Demo PDS moved from standard to wear levelling PDS
+    * [BCZPRO-1104] - N_AddressManager does unnecessary writes to NV during init
+    * [BCZPRO-1156] - Ensure that transceiver is in TRX_OFF before putting device into sleep
+    * [BCZPRO-559]  - Image Block Response with 64 bytes is not accepted
+    * [BCZPRO-1091] - Continuous Data polls as per poll rate after CSR joins to the parent in another channel
+    * [WCS-266]     - Vulnerability in wlPdsSecurity can make device FN
+    * [WCS-272]     - Routers do not respond when holding messages for children
+    * [WCS-276]     - Device falsely detects address conflict when BTT is full
+    * [WCS-278]     - Stack does not send packets with radius 0xFF
+    * [BCZPRO-889]  - Remove device type-specific UIDs for HADevice application
+    * [BCZPRO-679]  - Clean up use of CS_NWK_USE_MULTICAST
+    * [BCZPRO-673]  - Clean up board specific defines in configuration.h and application
+    * [BCZPRO-677]  - Update use of CS_ZDO_SECURITY_STATUS
+    * [BCZPRO-889]  - Remove device type-specific UIDs for HADevice application
+    * [BCZPRO-966]  - Device gets FN after upgrading to newer version
+    * [BCZPRO-1169] - Device does not leave when receiving MgmtLeaveReq when stolen
+    * [BCZPRO-964]  - [ZLLDemo] Remote and Light are unable to switch to other channel for Button 4 event on KRC Remote
+    * [BCZPRO-1071] - Attribute reporting stops when destination is temporary not reachable and parent is changed
+
+-------------------------------------------------------------------
+BitCloud SDK v3.0.0
+** Major new features
+    * [BCZPRO-19]  - Have full 256(4)RFR2 support in BitCloud core SDK
+    * [BCZPRO-74]  - Support wear leveling PDS in BC
+    * [BCZPRO-85]  - Enable SLEEP_WHEN_IDLE in BitCloud libraries and applications
+    * [BCZHA-2]    - Support EZ-mode commissioning in HADevice application
+    * [BCZHA-5]    - Add Combined Interface device in HADevice application
+    * [BCZPRO-108] - To have unified core libraries for ZPRO/ZLL/ZHA applications
+    * [BCZHA-14]   - Support ZAppSi mode in HADevice application
+
+** Major improvements and bug fixes
+    * [BCZPRO-1]   - Support new AS 6.1 for AVR
+    * [BCZHA-1]    - Update OTA Cluster to the latest spec used in ZHA 1.2
+    * [BCZHA-10]   - Ensure that reporting works on end devices
+    * [BCZPRO-18]  - Move UID reading from the HAL to BSP and app
+    * [BCZPRO-235] - ZCP certification of public BC release
+    * [BCZPRO-151] - Adding support for reading IEEE address from user signature page of flash
+    * [BCZPRO-329] - To add APS command to support reporting on ZappSI Host
+    * [BCZPRO-159] - Update ED rejoin procedure in stack and ZHA
+    * [BCZPRO-315] - [BC ZLL Demo] Scanning info not seen in LCD display for color scene remote control
+    * [BCZPRO-80]  - Support HAL functions for internal flash access
+    * [BCZPRO-89]  - Redesign response wait timer in zcl
+    * [BCZPRO-128] - Unify the types used for flash access in bootloader and HAL
+    * [BCZPRO-252] - ZLLDemo - Build fails when APP_USE_OTAU & USBFIFO are enabled for 256RFR2_RCB
+    * [BCZPRO-255] - ZLLDemo - Otau client not gets listed in otau window when USBFIFO is used
+    * [BCZPRO-261] - Reset light to FN (hold) not working for LIGHT with KRC
+    * [BCZPRO-283] - Console command description for few commands are not printed fully in Combined Interface
+    * [BCZPRO-285] - move color temperature value not showing in light console.
+    * [BCZPRO-299] - Potential NULL pointer dereference in zclParser.c
+    * [BCZPRO-312] - Touchlink transmit power register setting is incorrect
+    * [BCZPRO-313] - ZLLDemo - ColorSceneRemote as otau client not doing server discovery
+    * [BCZPRO-321] - End Device does not sleep during OTAU process
+    * [BCZPRO-331] - Memory is not released for ZCL requests that do not fit into ZCL buffer
+    * [BCZPRO-332] - ZLLDemo - Unable to use console commands for bridge with USBFIFO when OTAU is enabled
+    * [BCZPRO-369] - Client does not abort ongoing OTA process if ZCL_StopOtauClient() is called from application
+    * [BCZPRO-372] - csDefaults.h wrongly named as csDefaulfts.h in RC
+    * [BCZPRO-384] - Fix broken links in IAR workspaces
+    * [BCZHA-11]   - Non-success status of ZDO BindResp shall not stop binding
+    * [BCZHA-12]   - Unify console and debugging output between ZLL and ZHA
+    * [BCZHA-25]   - Bind default response reception to ZCL_Notify of the corresponding request
+    * [BCZHA-41]   - Make attributes reportable only after they are configured
+    * [BCZHA-49]   - Add configure reporting as notification processing to ZCL
+    * [BCZHA-52]   - Support Image Notify command on client
+    * [BCZHA-53]   - Switch to Block Requests if Page Request is not supported on server
+    * [BCZHA-60]   - Update image block request/response payload/wait_for_data status processing
+    * [BCZLL-3]    - Fix timing behavior in On/Off cluster
+    * [BCZLL-9]    - Fix simultaneous R+ and R- button use
+    * [BCZLL-14]   - Support ZLL1.0 CCB#1555 for On/Off Cluster
+    * [BCZLL-55]   - channel mask - not stored in PDS appropriately
+    * [BCZLL-70]   - [BC ZLL Demo] Select Next. Dev. & Identify (Button SEL) is not working
+
+V. Known limitations and planned improvements.
+===============================================
+The list is not complete.
+    * [BCZLL-109]   - [SAMR21] After image flashing board reset is required for running the SDK Applications using IAR -
+                      Workaround  open Configure Tools -> Menu Test, enter Reset - > Command, enter atprogram
+                      -> Argument, enter -t edbg -i SWD -d atsamr21g18a reset.
+                      This would take of resting the device before and after flashing.
+    * [BCZPRO-286]  - [SLRemote] Associate Failed error observed in SLRemote for "Discover networks" operation
+    * [BCZPRO-1205] - Fix use of transitionTime for Step commands
+    * [BCZPRO-305]  - Two IEEE requests responses are observed during touchlink
+    * [BCZPRO-350]  - Optimize UART buffer memory usage for console commands
+    * [BCZPRO-413]  - Provide CS parameters for node descriptor variables
+    * [BCZPRO-1807] - OTA enabled along with ZLL on SAMR21 for GCC exceeds memory footprint
+    * [BCZPRO-1798] - OTA header is duplicated in image payload when using secure image transfer
+    * [BCZPRO-296,1762,1651,1739,1693] - Few of the OTA server issues with respect to the PC tool are not handled.
+    * [BCZPRO-1824] - ZAppSINP PC Host Console is not accessible for build other than Standard Link Security
+    * [BCZPRO-1825] - Recommend to use only elf file format for SAMR21 devices.
+    * [BCZPRO-1077] - End device goes to sleep before polling the full data
+    * [BCZPRO-380]  - After frequent reset at the co-ordinator,randomly observe MAC ACK for APS packet not sent for an end device
+    * [BCZPRO-1080] - Current Consumption is more than expected on SAMR21 ZLL remote with OTAU
+    * [BCZPRO-1818] - ZHA - End Device(Multi Sensor) not rejoining after parent lost(CI)
+    * [BCZPRO-1688] - Default response with error status UNSUP_CLUSTER_COMMAND not received.
+    * [BCZPRO-1433] - Bitcloud compilation with AS6.2 is very slow
+    * [BCZPRO-1902] - [OTAU]:Sometimes 1 Hop Block mode upgrade for client doesn't happen in ATmegaRFR2_16MHZ
+    * [BCZPRO-2712] - End Device poll happens ~100ms after configured sleep period when using internal OSC32KHz for ASYNC timer on SAMR21.
+    * [BCZPRO-1512] - ZLL devices shall register endpoints with correct group count
+    * [BCZPRO-2751] - Server side of ZLL Commissioning cluster (utility) is incorrect
+    * [BCZPRO-2534] - Touchlink fails when on SAMR21 ZLLEK Remote with internal RC32KHz as async clock source
+    * [BCZPRO-2530] - Apps on megaRFR2 with IAR require BOOTSZ fuse to be set to 4096W_1F000 even if bootloader is not used
+    * [BCZPRO-2060] - PWM frequency in MEGARF is not matching the APP_PWM_FREQUENCY setting
+    * [BCZPRO-2056] - ZLL-Remote should send rejoin request to its assumed parent before sending any application command
+    * [BCZPRO-2640] - USB not Supported for OTAU Applications (Router)
+    * [BCZPRO-2039] - Provide notification to application on attr report failure
+    * [BCZPRO-1601] - Manufacturer specific attribute ID cannot be the same as the Zigbee defined attribute ID in a cluster

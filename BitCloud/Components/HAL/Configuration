@@ -1,0 +1,172 @@
+#-------------------------------------------------------------------------------
+#  \file Configuration
+#
+#  \brief Declares build options for HAL.
+#
+#  \author
+#    Atmel Corporation: http://www.atmel.com \n
+#    Support email: avr@atmel.com
+#
+#  Copyright (c) 2008-2015, Atmel Corporation. All rights reserved.
+#  Licensed under Atmel's Limited License Agreement (BitCloudTM).
+#
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# Build configuration:
+#  DEBUG - system asserts, logging and debug info are switched on
+#  RELEASE - system asserts, logging and debug info are switched off
+#-------------------------------------------------------------------------------
+BUILD_CONFIGURATION = RELEASE
+#BUILD_CONFIGURATION = DEBUG
+
+#-------------------------------------------------------------------------------
+# Build configuration:
+#  If QUIET is TRUE then short build message format is used, otherwise - normal.
+#-------------------------------------------------------------------------------
+QUIET = TRUE
+#QUIET = FALSE
+
+#-------------------------------------------------------------------------------
+# Compiler type:
+#-------------------------------------------------------------------------------
+#COMPILER_TYPE = GCC
+ COMPILER_TYPE = IAR
+
+#-------------------------------------------------------------------------------
+# Device type declaration:
+#-------------------------------------------------------------------------------
+#STACK_TYPE = ZGPDEVICE
+#-------------------------------------------------------------------------------
+# Platforms selection:
+#-------------------------------------------------------------------------------
+PLATFORM = PLATFORM_SAMR21
+
+#-------------------------------------------------------------------------------
+# ATML_SAMR21 platform specific options:
+#-------------------------------------------------------------------------------
+ifeq ($(PLATFORM), PLATFORM_SAMR21)
+  #HAL = ATSAMR21E18A
+  HAL = ATSAMR21G18A
+  #HAL = ATSAMR21E19A
+
+  # Controller's reference frequency
+   HAL_FREQUENCY = HAL_4MHz
+  #HAL_FREQUENCY = HAL_8MHz
+   #HAL_FREQUENCY = HAL_16MHz
+   #HAL_FREQUENCY = HAL_24MHz
+   #HAL_FREQUENCY = HAL_32MHz
+   #HAL_FREQUENCY = HAL_48MHz
+
+# Auto Selection of Clock source
+ifeq ($(HAL), ATSAMR21G18A)
+# For 4 and 8MHz use internal RC as clock source, otherwise XOSC32K or CLKM
+ifneq (, $(findstring $(HAL_FREQUENCY), HAL_4MHz HAL_8MHz))
+  HAL_CLOCK_SOURCE = RC_INTERNAL
+  # HAL_CLOCK_SOURCE = CLKM
+else
+  HAL_CLOCK_SOURCE = XOSC32K
+  # HAL_CLOCK_SOURCE = CLKM
+endif
+
+  # Asynchronous clock source. Parameter is valid only for SAMR21 family.
+  # HAL_ASYNC_CLOCK_SOURCE = RC_32K
+  HAL_ASYNC_CLOCK_SOURCE = CRYSTAL_32K
+endif
+
+ifneq (, $(findstring $(HAL), ATSAMR21E18A ATSAMR21E19A))
+# For 4 and 8MHz use internal RC as clock source or CLKM, otherwise CLKM only
+ifneq (, $(findstring $(HAL_FREQUENCY), HAL_4MHz HAL_8MHz))
+  HAL_CLOCK_SOURCE = RC_INTERNAL
+  # HAL_CLOCK_SOURCE = CLKM
+else
+  HAL_CLOCK_SOURCE = CLKM
+endif
+# Asynchronous clock source. Parameter is valid only for SAMR21 family.
+  HAL_ASYNC_CLOCK_SOURCE = RC_32K
+endif
+
+  # Accessible periphery
+  USART = TRUE
+  #USART = FALSE
+
+  TWI = TRUE
+  #TWI = FALSE
+
+  #WDT = TRUE
+  WDT = FALSE
+
+  PWM = TRUE
+  #PWM = FALSE
+
+  ADC = TRUE
+  #ADC = FALSE
+
+  SPI = TRUE
+  #SPI = FALSE
+
+  TS = TRUE
+  #TS = FALSE
+ifeq ($(HAL_FREQUENCY), HAL_4MHz)
+    #USB = TRUE
+    USB = FALSE
+else # for all other frequencies
+    USB = TRUE
+    #USB = FALSE
+endif
+ifeq ($(USB), TRUE)
+    USB_TEXT_MODE = TRUE
+    # USB_TEXT_MODE = FALSE
+    # USB_HOT_PLUG_ENUMERATION = TRUE
+    USB_HOT_PLUG_ENUMERATION = FALSE
+endif
+
+  # EEPROM is based on flash emulation
+  EEPROM = TRUE
+  #EEPROM = FALSE
+
+  #EEPROM_EMULATION = TRUE
+  EEPROM_EMULATION = FALSE
+
+  # Use program memory access interface.
+  INTERNAL_FLASH_ACCESS = TRUE
+  #INTERNAL_FLASH_ACCESS = FALSE
+
+  # Note that BitCloud uses the following HAL components
+  # (all of which are also accessible to an application):
+  # application timer, asynchronous timer,
+  # sleep routine, external interrupt
+endif # PLATFORM_SAMR21
+
+#-------------------------------------------------------------------------------
+# OS selection (only for ARM):
+#-------------------------------------------------------------------------------
+OS = NONE_OS
+#OS = FREE_RTOS
+
+# Gives a possibility to enable USART error callbacks
+HAL_USE_USART_ERROR_EVENT = FALSE
+#HAL_USE_USART_ERROR_EVENT = TRUE
+
+# Gives a possibility to enable USB error callbacks
+HAL_USE_USB_ERROR_EVENT = FALSE
+#HAL_USE_USB_ERROR_EVENT = TRUE
+
+#RF_RX_TX_INDICATOR
+#HAL_RF_RX_TX_INDICATOR = TRUE
+HAL_RF_RX_TX_INDICATOR = FALSE
+
+#Special sleep mode for WPIRDemo application
+#See PIRRD_board.pdf
+HAL_USE_PIRRD_SPECIAL_SLEEP = FALSE
+#HAL_USE_PIRRD_SPECIAL_SLEEP = TRUE
+
+# Antenna diversity feature
+HAL_ANT_DIVERSITY = FALSE
+#HAL_ANT_DIVERSITY = TRUE
+
+# Use transceiver Deep Sleep mode instead of ordinary sleep, where supported
+HAL_RF_DEEP_SLEEP = FALSE
+#HAL_RF_DEEP_SLEEP = TRUE
+
+# eof Configuration

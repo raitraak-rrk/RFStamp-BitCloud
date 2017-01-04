@@ -1,0 +1,18 @@
+
+
+
+// used interfaces
+#ifdef TESTHARNESS
+
+#else
+
+#define N_Groups_AddToGroup N_Groups_AddToGroup_Impl
+#define N_Groups_RemoveFromGroup N_Groups_RemoveFromGroup_Impl
+#define N_Groups_RemoveFromAllGroups N_Groups_RemoveFromAllGroups_Impl
+#define N_Groups_IsMemberOfGroup N_Groups_IsMemberOfGroup_Impl
+#define N_Groups_GetTotalCapacity N_Groups_GetTotalCapacity_Impl
+#define N_Groups_GetRemainingCapacity N_Groups_GetRemainingCapacity_Impl
+#define N_Groups_GetGroup N_Groups_GetGroup_Impl
+#define N_Groups_Subscribe N_Groups_Subscribe_Impl
+
+#endif // TESTHARNESS
