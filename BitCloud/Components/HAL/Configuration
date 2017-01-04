@@ -30,8 +30,8 @@ QUIET = TRUE
 #-------------------------------------------------------------------------------
 # Compiler type:
 #-------------------------------------------------------------------------------
-#COMPILER_TYPE = GCC
- COMPILER_TYPE = IAR
+COMPILER_TYPE = GCC
+#COMPILER_TYPE = IAR
 
 #-------------------------------------------------------------------------------
 # Device type declaration:
@@ -51,12 +51,12 @@ ifeq ($(PLATFORM), PLATFORM_SAMR21)
   #HAL = ATSAMR21E19A
 
   # Controller's reference frequency
-   HAL_FREQUENCY = HAL_4MHz
+  #HAL_FREQUENCY = HAL_4MHz
   #HAL_FREQUENCY = HAL_8MHz
-   #HAL_FREQUENCY = HAL_16MHz
-   #HAL_FREQUENCY = HAL_24MHz
-   #HAL_FREQUENCY = HAL_32MHz
-   #HAL_FREQUENCY = HAL_48MHz
+  #HAL_FREQUENCY = HAL_16MHz
+  #HAL_FREQUENCY = HAL_24MHz
+  #HAL_FREQUENCY = HAL_32MHz
+  HAL_FREQUENCY = HAL_48MHz
 
 # Auto Selection of Clock source
 ifeq ($(HAL), ATSAMR21G18A)

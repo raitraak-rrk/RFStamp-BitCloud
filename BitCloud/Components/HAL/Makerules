@@ -1360,10 +1360,6 @@ else
   $(error unsupported COMPILER_AND_MICRO_TYPE)
 endif
 
-ifneq ($(EXP_VERSION), $(COMPILER_VERSION))
-  $(error ERROR in file Makerules: You are using incorrect version of compiler: \
-    installed $(COMPILER_VERSION), expected $(EXP_VERSION))
-endif
 
 ifeq ($(COMPILER_TYPE), IAR)
   COMPILER_TYPE_LOWER_CASE = _Iar

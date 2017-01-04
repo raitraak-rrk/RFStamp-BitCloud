@@ -139,18 +139,21 @@ component_label:
 
 ################ common part ##############################
 $(HAL_HWD_COMMON_PATH)/objs/%.o: $(HAL_HWD_COMMON_PATH)/src/%.c
+	if [ ! -d $(HAL_HWD_COMMON_PATH)/objs ] ; then mkdir $(HAL_HWD_COMMON_PATH)/objs ; fi
 	$(CC_MSG)
 	$(Q)$(CC) $(CFLAGS) $^ -o $@
 ################ common part ##############################	
 
 ################ personal part ##############################
 $(HAL_MAC_API_PATH)/objs/%.o: $(HAL_MAC_API_PATH)/src/%.c
+	if [ ! -d $(HAL_MAC_API_PATH)/objs ] ; then mkdir $(HAL_MAC_API_PATH)/objs ; fi
 	$(CC_MSG)
 	$(Q)$(CC) $(CFLAGS) $^ -o $@
 ################ personal part ##############################
 
 ################ hwi part ###################################
 $(BUILDDIR)/../common/objs/%.o: $(BUILDDIR)/../common/src/%.c
+	if [ ! -d $(BUILDDIR)/../common/objs ] ; then mkdir $(BUILDDIR)/../common/objs ; fi
 	$(CC_MSG)
 	$(Q)$(CC) $(CFLAGS) $^ -o $@
 ################ hwi part ###################################
@@ -158,6 +161,7 @@ $(BUILDDIR)/../common/objs/%.o: $(BUILDDIR)/../common/src/%.c
 ifeq ($(USB), TRUE)
 ################ cdc part ###################################
 $(HAL_USB_CDC_PATH)/objs/%.o: $(HAL_USB_CDC_PATH)/src/%.c
+	if [ ! -d $(HAL_USB_CDC_PATH)/objs ] ; then mkdir $(HAL_USB_CDC_PATH)/objs ; fi
 	$(CC_MSG)
 	$(Q)$(CC) $(CFLAGS) $(USB_CFLAGS) $^ -o $@
 ################ cdc part ###################################
@@ -165,6 +169,7 @@ endif
 
 ################ asm part ###################################
 $(HAL_HWD_COMMON_PATH)/objs/%.o: $(HAL_HWD_COMMON_PATH)/src/%.s
+	if [ ! -d $(HAL_HWD_COMMON_PATH)/objs ] ; then mkdir $(HAL_HWD_COMMON_PATH)/objs ; fi
 	$(AS_MSG)
 	$(Q)$(AS) $(ASMFLAGS) $^ -o $@
 ################ asm part ###################################
