@@ -44,7 +44,7 @@
 #endif // APP_USE_OTAU == 1
 
 #if defined(ATMEL_APPLICATION_SUPPORT)
-#include <colorSceneRemoteBindings.h>
+#include <appBindings.h>
 #include <N_EndDeviceRobustness.h>
 #include <N_Cmi.h>
 #endif
