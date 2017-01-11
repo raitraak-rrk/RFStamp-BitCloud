@@ -1,6 +1,2 @@
 /BitCloud/Components/HAL/HAL.componentinfo.xml
 /BitCloud/lib/libHAL_Samr21_Atsamr21g18a_48Mhz_Gcc.a
-/BitCloud/Components/HAL/cortexm0+/atsamr21/common/objs
-/BitCloud/Components/HAL/cortexm0+/common/objs
-/BitCloud/Components/HAL/drivers/USBClasses/cdc/objs/BitCloud/lib/libHAL_Samr21_Atsamr21g18a_48Mhz_Gcc.a
-objs
