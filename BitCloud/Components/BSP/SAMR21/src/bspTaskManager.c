@@ -52,8 +52,16 @@ void bspEmptyBatteryHandler(void);
 /**************************************************************************//**
 \brief BSP Touch handler.
 ******************************************************************************/
-#if((QTOUCH_SUPPORT == 1) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK))
+#if((QTOUCH_SUPPORT == 1) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) ||\
+    (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFRINGQT)))
 void bspTouchHandler(void);
+#endif
+
+/**************************************************************************//**
+\brief BSP RGBLED handler.
+******************************************************************************/
+#if ((BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM))
+void bspRGBLEDHandler(void);
 #endif
 
 /******************************************************************************
@@ -99,12 +107,21 @@ void BSP_TaskHandler(void)
     bspEmptyBatteryHandler();
   }
 
-#if((QTOUCH_SUPPORT == 1) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK))
+#if((QTOUCH_SUPPORT == 1) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) ||\
+    (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFRINGQT)))
   if (bspTaskFlags & BSP_TOUCH)
   {
     bspTaskFlags &= (~BSP_TOUCH);
     bspTouchHandler();
   }
+#endif
+
+#if ((BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM))
+if (bspTaskFlags & BSP_RGBLED)
+{
+    bspTaskFlags &= (~BSP_RGBLED);
+    bspRGBLEDHandler();
+}
 #endif
 
   if (bspTaskFlags)

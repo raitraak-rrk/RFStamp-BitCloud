@@ -910,7 +910,7 @@ static uint8_t formDiscoverCommandsGeneratedResponse(ZCL_DiscoverCommandsGenerat
       do
       {
          if ((command->id >= req->startCommandId) &&
-              (counter < req->maxCommandIds) && (!clusterSide == command->options.direction))
+              (counter < req->maxCommandIds) && ((!clusterSide) == command->options.direction))
           {
             resp->commandIds[counter] = ((ZclCommand_t*)command)->id ;
             result += sizeof(uint8_t);/*size of each command Id included*/

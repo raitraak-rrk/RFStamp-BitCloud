@@ -19,7 +19,7 @@
                     Include section
 ******************************************************************************/
 #include <debug.h>
-#include <lightBindings.h>
+#include <appBindings.h>
 #include <N_Connection.h>
 #include <N_LinkTarget.h>
 #include <zllDemo.h>

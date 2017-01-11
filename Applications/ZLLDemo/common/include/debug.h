@@ -37,6 +37,7 @@
 #define NETWORKJOINING_STARTNETWORK_1       0xf006
 #define REMOTECONSOLE_RESETDEVICETOFN_0     0xf005
 #define REMOTECONSOLE_IDENTIFYDEVICE_0      0xf006
+#define APP_ASSERT_0					    0xf100
 /******************************************************************************
                     Prototypes section
 ******************************************************************************/

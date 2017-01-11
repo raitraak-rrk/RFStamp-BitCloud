@@ -34,8 +34,12 @@ enum
   BSP_LIGHT        = (uint8_t)1 << 2,
   BSP_BATTERY      = (uint8_t)1 << 3,
   BSP_JOYSTICK     = (uint8_t)1 << 4,
-#if((defined QTOUCH_SUPPORT) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK))
+#if((QTOUCH_SUPPORT == 1) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) ||\
+    (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFRINGQT)))
   BSP_TOUCH        = (uint8_t)1 << 5,
+#endif
+#if (BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM)
+  BSP_RGBLED       = (uint8_t)1 << 6,
 #endif
 };
 /******************************************************************************

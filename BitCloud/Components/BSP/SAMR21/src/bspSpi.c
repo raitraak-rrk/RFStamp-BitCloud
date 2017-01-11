@@ -86,6 +86,27 @@ void BSP_BoardSpecificSpiPinInit(SpiChannel_t tty)
 
     tty->dopoConfig = 2;
     tty->dipoConfig = 2;
+#elif ((BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFSTRIP))
+    tty->sercom = &(SERCOM2->SPI);
+    
+    tty->spiPinConfig[SPI_CS_SIG].pinNum = 14;
+    tty->spiPinConfig[SPI_CS_SIG].portNum = PORT_A;
+    tty->spiPinConfig[SPI_CS_SIG].functionConfig = 2;
+
+    tty->spiPinConfig[SPI_SCK_SIG].pinNum = 13;
+    tty->spiPinConfig[SPI_SCK_SIG].portNum = PORT_A;
+    tty->spiPinConfig[SPI_SCK_SIG].functionConfig = 2;
+
+    tty->spiPinConfig[SPI_MISO_SIG].pinNum = 15;
+    tty->spiPinConfig[SPI_MISO_SIG].portNum = PORT_A;
+    tty->spiPinConfig[SPI_MISO_SIG].functionConfig = 2;
+
+    tty->spiPinConfig[SPI_MOSI_SIG].pinNum = 12;
+    tty->spiPinConfig[SPI_MOSI_SIG].portNum = PORT_A;
+    tty->spiPinConfig[SPI_MOSI_SIG].functionConfig = 2;
+
+    tty->dopoConfig = 0;
+    tty->dipoConfig = 3;
 #else
     tty->sercom = &(SERCOM2->SPI);
     tty->spiPinConfig[SPI_CS_SIG].pinNum = 14;
@@ -110,6 +131,20 @@ void BSP_BoardSpecificSpiPinInit(SpiChannel_t tty)
   }
   else if (tty == SPI_CHANNEL_1)
   {
+#if ((BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM))
+    tty->sercom = &(SERCOM3->SPI);
+
+    tty->spiPinConfig[SPI_SCK_SIG].pinNum = 28;
+    tty->spiPinConfig[SPI_SCK_SIG].portNum = PORT_A;
+    tty->spiPinConfig[SPI_SCK_SIG].functionConfig = 5;
+
+    tty->spiPinConfig[SPI_MOSI_SIG].pinNum = 27;
+    tty->spiPinConfig[SPI_MOSI_SIG].portNum = PORT_A;
+    tty->spiPinConfig[SPI_MOSI_SIG].functionConfig = 5;
+
+    tty->dopoConfig = 0;
+    tty->dipoConfig = 0;
+#else
     tty->sercom = &(SERCOM5->SPI);
     tty->spiPinConfig[SPI_CS_SIG].pinNum = 22;
     tty->spiPinConfig[SPI_CS_SIG].portNum = PORT_B;
@@ -125,6 +160,7 @@ void BSP_BoardSpecificSpiPinInit(SpiChannel_t tty)
     
     tty->dopoConfig = 0;
     tty->dipoConfig = 3;
+#endif
   }
 }
 #endif // if BSP_SUPPORT != BOARD_FAKE

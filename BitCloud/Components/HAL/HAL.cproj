@@ -44,90 +44,90 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <ArmGcc>
-        <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
-        <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
-        <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
-        <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
-        <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
-        <armgcc.compiler.symbols.DefSymbols>
-          <ListValues>
-            <Value>NDEBUG</Value>
-          </ListValues>
-        </armgcc.compiler.symbols.DefSymbols>
-        <armgcc.compiler.directories.IncludePaths>
-          <ListValues>
-            <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
-            <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcc.compiler.directories.IncludePaths>
-        <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
-        <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
-        <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
-        <armgcc.linker.libraries.Libraries>
-          <ListValues>
-            <Value>libm</Value>
-          </ListValues>
-        </armgcc.linker.libraries.Libraries>
-        <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
-        <armgcc.assembler.general.IncludePaths>
-          <ListValues>
-            <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
-            <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcc.assembler.general.IncludePaths>
-        <armgcc.preprocessingassembler.general.IncludePaths>
-          <ListValues>
-            <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
-            <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcc.preprocessingassembler.general.IncludePaths>
-      </ArmGcc>
+  <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+  <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+  <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+  <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+  <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+  <armgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>NDEBUG</Value>
+    </ListValues>
+  </armgcc.compiler.symbols.DefSymbols>
+  <armgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
+      <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.compiler.directories.IncludePaths>
+  <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
+  <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+  <armgcc.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </armgcc.linker.libraries.Libraries>
+  <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+  <armgcc.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
+      <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.assembler.general.IncludePaths>
+  <armgcc.preprocessingassembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
+      <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.preprocessingassembler.general.IncludePaths>
+</ArmGcc>
     </ToolchainSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <ArmGcc>
-        <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
-        <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
-        <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
-        <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
-        <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
-        <armgcc.compiler.symbols.DefSymbols>
-          <ListValues>
-            <Value>DEBUG</Value>
-          </ListValues>
-        </armgcc.compiler.symbols.DefSymbols>
-        <armgcc.compiler.directories.IncludePaths>
-          <ListValues>
-            <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
-            <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcc.compiler.directories.IncludePaths>
-        <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
-        <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
-        <armgcc.compiler.optimization.DebugLevel>Maximum (-g3)</armgcc.compiler.optimization.DebugLevel>
-        <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
-        <armgcc.linker.libraries.Libraries>
-          <ListValues>
-            <Value>libm</Value>
-          </ListValues>
-        </armgcc.linker.libraries.Libraries>
-        <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
-        <armgcc.assembler.general.IncludePaths>
-          <ListValues>
-            <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
-            <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcc.assembler.general.IncludePaths>
-        <armgcc.assembler.debugging.DebugLevel>Default (-g)</armgcc.assembler.debugging.DebugLevel>
-        <armgcc.preprocessingassembler.general.IncludePaths>
-          <ListValues>
-            <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
-            <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
-          </ListValues>
-        </armgcc.preprocessingassembler.general.IncludePaths>
-        <armgcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcc.preprocessingassembler.debugging.DebugLevel>
-      </ArmGcc>
+  <armgcc.common.outputfiles.hex>True</armgcc.common.outputfiles.hex>
+  <armgcc.common.outputfiles.lss>True</armgcc.common.outputfiles.lss>
+  <armgcc.common.outputfiles.eep>True</armgcc.common.outputfiles.eep>
+  <armgcc.common.outputfiles.bin>True</armgcc.common.outputfiles.bin>
+  <armgcc.common.outputfiles.srec>True</armgcc.common.outputfiles.srec>
+  <armgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>DEBUG</Value>
+    </ListValues>
+  </armgcc.compiler.symbols.DefSymbols>
+  <armgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
+      <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.compiler.directories.IncludePaths>
+  <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
+  <armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</armgcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <armgcc.compiler.optimization.DebugLevel>Maximum (-g3)</armgcc.compiler.optimization.DebugLevel>
+  <armgcc.compiler.warnings.AllWarnings>True</armgcc.compiler.warnings.AllWarnings>
+  <armgcc.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </armgcc.linker.libraries.Libraries>
+  <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+  <armgcc.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
+      <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.assembler.general.IncludePaths>
+  <armgcc.assembler.debugging.DebugLevel>Default (-g)</armgcc.assembler.debugging.DebugLevel>
+  <armgcc.preprocessingassembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\SAMR21_DFP\1.0.34\include</Value>
+      <Value>%24(PackRepoDir)\arm\cmsis\4.2.0\CMSIS\Include\</Value>
+    </ListValues>
+  </armgcc.preprocessingassembler.general.IncludePaths>
+  <armgcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcc.preprocessingassembler.debugging.DebugLevel>
+</ArmGcc>
     </ToolchainSettings>
     <UsesExternalMakeFile>True</UsesExternalMakeFile>
     <OutputDirectory>
@@ -138,5 +138,658 @@
     </CleanTarget>
     <ExternalMakeFilePath>Makefile</ExternalMakeFilePath>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="cortexm0+\" />
+    <Folder Include="cortexm0+\atsamr21\" />
+    <Folder Include="cortexm0+\atsamr21\common\" />
+    <Folder Include="cortexm0+\atsamr21\common\include\" />
+    <Folder Include="cortexm0+\atsamr21\common\objs\" />
+    <Folder Include="cortexm0+\atsamr21\common\src\" />
+    <Folder Include="cortexm0+\common\" />
+    <Folder Include="cortexm0+\common\objs\" />
+    <Folder Include="cortexm0+\common\src\" />
+    <Folder Include="drivers\" />
+    <Folder Include="drivers\DPWM\" />
+    <Folder Include="drivers\DPWM\include\" />
+    <Folder Include="drivers\DPWM\src\" />
+    <Folder Include="drivers\include\" />
+    <Folder Include="drivers\ISD\" />
+    <Folder Include="drivers\ISD\include\" />
+    <Folder Include="drivers\ISD\src\" />
+    <Folder Include="drivers\OFD\" />
+    <Folder Include="drivers\OFD\include\" />
+    <Folder Include="drivers\OFD\src\" />
+    <Folder Include="drivers\USBClasses\" />
+    <Folder Include="drivers\USBClasses\cdc\" />
+    <Folder Include="drivers\USBClasses\cdc\include\" />
+    <Folder Include="drivers\USBClasses\cdc\objs\" />
+    <Folder Include="drivers\USBClasses\cdc\src\" />
+    <Folder Include="drivers\USBClasses\common\" />
+    <Folder Include="drivers\USBClasses\common\include\" />
+    <Folder Include="drivers\USBClasses\common\src\" />
+    <Folder Include="drivers\USBClasses\DFU\" />
+    <Folder Include="drivers\USBClasses\DFU\include\" />
+    <Folder Include="drivers\USBClasses\DFU\src\" />
+    <Folder Include="drivers\USBClasses\MSD\" />
+    <Folder Include="drivers\USBClasses\MSD\include\" />
+    <Folder Include="drivers\USBClasses\MSD\src\" />
+    <Folder Include="drivers\USBClasses\VCP\" />
+    <Folder Include="drivers\USBClasses\VCP\include\" />
+    <Folder Include="drivers\USBClasses\VCP\src\" />
+    <Folder Include="drivers\USBFIFO\" />
+    <Folder Include="drivers\USBFIFO\include\" />
+    <Folder Include="drivers\USBFIFO\src\" />
+    <Folder Include="include\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cortexm0+\atsamr21\common\include\atsamr21.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\component_adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\component_port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\component_sercom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\component_usb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\core_cm0plus.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\core_cmFunc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\core_cmInstr.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\gpio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halAdc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halAppClock.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halAssert.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halClkCtrl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halDbg.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halDiagnostic.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halEeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halFlash.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halInterrupt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halIrq.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halMacIsr.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halPwm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halReset.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halRfCtrl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halRfPio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halRfSpi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halSleep.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halSleepTimerClock.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halSpi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halTempSensor.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halTwi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halUsart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halUsb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\halWdt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\include\instance_usb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\atomic.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halAdc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halAppClock.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halEeprom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halFlash.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halInit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halIrq.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halLowLevelInit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halMacIsr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halPwm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halReset.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halRfCtrl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halRfSpi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halSleep.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halSleepTimerClock.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halSpi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halStartupGcc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halStartupIar.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halTempSensor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halTwi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halUsart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halUsb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halVectorTable.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\atsamr21\common\src\halWdt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\appTimer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\eeprom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\flash.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\halTaskManager.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\i2cPacket.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\irq.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\pwm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\resetReason.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\sleep.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\sleepTimer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\spi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\statStack.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\tempSensor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\timer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\usart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\usb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="cortexm0+\common\src\wdt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\DPWM\include\dithTimerIsr.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\DPWM\src\dithPwm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\DPWM\src\dithTimerIsr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\dithPwm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\driversDbg.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\isdImageStorage.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\massStorageDevice.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\ofdExtMemory.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\usbFifoUsart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\include\vcpVirtualUsart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\ISD\include\isdConsoleTunneling.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\ISD\src\isdConsoleTunneling.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\ISD\src\isdImageStorage.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\include\ofdMemoryDriver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdAt25Driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdAt45dbDriver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdCommand.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdCrcService.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdFakeDriver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdIntFlashRead.s">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdM25Driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdMx25l2006eDriver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdMx25v4006eDriver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\OFD\src\ofdSpiSerializer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\conf_usb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\udc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\udc_desc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\udd.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\udi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\udi_cdc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\udi_cdc_conf.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\usb_atmel.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\usb_protocol.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\include\usb_protocol_cdc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\src\udc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\src\udi_cdc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\src\udi_cdc_desc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\cdc\src\usb_device_udd.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\common\include\usbDescriptors.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\common\include\usbEnumeration.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\common\include\usbSetupProcess.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\common\src\usbDescriptors.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\common\src\usbEnumeration.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\common\src\usbSetupProcess.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\DFU\include\dfuProtocol.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\DFU\src\dfuProtocol.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\include\abstractMemory.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\include\mem.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\include\mscProtocol.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\include\scsiProtocol.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\src\abstractMemory.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\src\massStorageDevice.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\src\mmc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\src\mscProtocol.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\MSD\src\scsiProtocol.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\VCP\include\vcpCdcProtocol.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\VCP\src\vcpCdcProtocol.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBClasses\VCP\src\vcpVirtualUsart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBFIFO\include\usbFifoVirtualUsart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBFIFO\src\usbFifoFT245RL.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="drivers\USBFIFO\src\usbFifoVirtualUsart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\appTimer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\atomic.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\bcTimer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\calibration.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\dbgu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\eeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\flash.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\halInit.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\halTaskManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\hsmci.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\i2cPacket.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\irq.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\pwm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\reducePower.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\resetReason.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\sleep.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\sleepTimer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\spi.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\statStack.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\stdioAdapter.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\tempSensor.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\uart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\usart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\usb.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\w1.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="include\wdtCtrl.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Configuration">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\atomic.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halAdc.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halAppClock.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halEeprom.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halFlash.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halInit.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halIrq.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halLowLevelInit.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halMacIsr.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halPwm.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halReset.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halRfCtrl.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halRfSpi.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halSleep.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halSleepTimerClock.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halSpi.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halStartupGcc.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halTempSensor.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halTwi.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halUsart.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halUsb.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halVectorTable.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\atsamr21\common\objs\halWdt.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\appTimer.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\halTaskManager.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\irq.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\resetReason.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\sleep.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\sleepTimer.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\timer.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\common\objs\usart.o">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="cortexm0+\Makefile">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="drivers\OFD\Makefile">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="drivers\OFD\src\ofdIntFlashRead.s90">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="drivers\USBClasses\VCP\Makefile">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="Makefile">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="Makerules">
+      <SubType>compile</SubType>
+    </None>
+  </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

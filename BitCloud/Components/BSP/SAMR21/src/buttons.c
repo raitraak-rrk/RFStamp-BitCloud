@@ -40,14 +40,17 @@
 #define BSP_readKEY0() (GPIO_B23_read())
 #elif BSP_SUPPORT == BOARD_SAMR21_XPRO
 #define BSP_readKEY0() (GPIO_A28_read())
+#elif BSP_SUPPORT == BOARD_RFSTRIP
+#define BSP_readKEY0() (GPIO_A27_read())
 #endif
 
 #if BSP_SUPPORT == BOARD_SAMR21_ZLLEK
 #define BUTTON_IRQ IRQ_EIC_EXTINT7
 #elif BSP_SUPPORT == BOARD_SAMR21_XPRO
 #define BUTTON_IRQ IRQ_EIC_EXTINT8
+#elif BSP_SUPPORT == BOARD_RFSTRIP
+#define BUTTON_IRQ IRQ_EIC_EXTINT15
 #endif
-
 /******************************************************************************
                    Types section
 ******************************************************************************/
@@ -72,7 +75,7 @@ typedef struct _BSP_ButtonsDescriptor_t
   bool busy;
 } BSP_ButtonDescriptor_t;
 
-#if (BSP_SUPPORT == BOARD_SAMR21_XPRO) || (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if (BSP_SUPPORT == BOARD_SAMR21_XPRO) || (BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP)
 /******************************************************************************
                    Prototypes section
 ******************************************************************************/
@@ -113,6 +116,12 @@ static void bspInitButtons(void)
   PORTA_PINCFG28_s.pmuxen = 1;
   PORTA_PINCFG28_s.inen = 1;
   PORTA_PMUX14_s.pmuxe = 0;
+#elif BSP_SUPPORT == BOARD_RFSTRIP
+  GPIO_A27_make_in();
+  GPIO_A27_make_pullup();
+  PORTA_PINCFG27_s.pmuxen = 1;
+  PORTA_PINCFG27_s.inen = 1;
+  PORTA_PMUX13_s.pmuxo = 0;
 #else
 #error 'Unsupported board.'
 #endif

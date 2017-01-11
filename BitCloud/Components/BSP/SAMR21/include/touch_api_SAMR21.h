@@ -1,4 +1,4 @@
-/* This source file is part of the ATMEL QTouch Library Release 5.0.3 */
+/* This source file is part of the ATMEL QTouch Library Release 5.0.6 */
 
 /*****************************************************************************
  *
@@ -12,7 +12,7 @@
  * - Support email:      www.atmel.com/design-support/
  *
  *
- * Copyright (c) 2013 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2013-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -30,7 +30,7 @@
  *    from this software without specific prior written permission.
  *
  * 4. This software may only be redistributed and used in connection with an
- *    Atmel microcontroller product.
+ *    Atmel micro-controller product.
  *
  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -47,15 +47,10 @@
  * \asf_license_stop
  *
  ******************************************************************************/
-/*******************************************************************************   
-\internal
-  History:
-   18.02.15 Yogesh - Created for the MultiCap functionality required.Optimized/Removed 
-                     wherever needed 
-*******************************************************************************/
-#if((QTOUCH_SUPPORT == 1) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK))
-#ifndef TOUCH_API_SAMD_H
-#define TOUCH_API_SAMD_H
+
+#if((QTOUCH_SUPPORT == 1) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFRINGQT)))
+#ifndef TOUCH_API_PTC_H
+#define TOUCH_API_PTC_H
 
 #ifdef __cplusplus
 extern "C"
@@ -73,7 +68,6 @@ extern "C"
  *
  *
  *----------------------------------------------------------------------------*/
-//#include "asf.h"
 
 #include "touch.h"
 
@@ -101,14 +95,31 @@ extern "C"
 #define DIS_FREQ_AUTO_TUNE                      0u
 
 #define MAX_LOCKOUT_VAL                         2u
+#define NO_RECAL_RE_EN							1u
 
+/*Default AUTO TUNE define*/
+#define DEF_AUTO_TUNE_NONE		 0
+
+/*Default AUTO_OS define*/
+#define DEF_AUTO_OS_DISABLE		0
+
+/*Default AKS feature define*/
+#define DEF_AKS_DISABLE				0
+
+#define DEF_FREQ_AUTO_TUNE_DISABLE	0
+
+#define DEF_NOISE_MEAS_DISABLE		0
+
+#define DEF_SENS_LOCKOUT_NO			2
+
+#define DEF_MOIS_TOLERANCE_DISABLE	0
 /*----------------------------------------------------------------------------
  *                           manifest constants
  *
  *
  *----------------------------------------------------------------------------*/
 
-/*! \name Touch Library Acquisition Status bitfields.
+/*! \name Touch Library Acquisition Status bit-fields.
  */
 /* ! @{ */
 
@@ -116,12 +127,12 @@ extern "C"
 #define TOUCH_IN_DETECT               (0x0001u) /* !< Atleast one Touch channel
 	                                         * is in detect. */
 #define TOUCH_STATUS_CHANGE           (0x0002u) /* !< Change in Touch status of
-	                                        * atleast one Touch channel. */
+	                                        * at-least one Touch channel. */
 #define TOUCH_ROTOR_SLIDER_POS_CHANGE (0x0004u) /* !< Change in Rotor or Slider
-	                                         * position of atleast one rotor
+	                                         * position of at-least one rotor
 	                                         * or slider. */
 #define TOUCH_CHANNEL_REF_CHANGE      (0x0008u) /* !< Change in Reference value
-	                                         * of atleast one Touch channel.
+	                                         * of at-least one Touch channel.
 	                                         **/
 #define TOUCH_BURST_AGAIN             (0x0100u) /* !< Indicates that reburst is
 	                                         * required to resolve Filtering
@@ -146,7 +157,7 @@ extern "C"
 	                                                 * channel. */
 
 #define TOUCH_AUTO_OS_IN_PROGRESS         (0x4000u)     /* !< Indicates that
-	                                                 * Auto os in progress
+	                                                 * Auto-oversamples in progress
 	                                                 * to get stable channel
 	                                                 *signal. */
 /* ! @} */
@@ -206,8 +217,34 @@ extern "C"
 
 /* Mutual capacitance method */
 #define GET_SELFCAP_SENSOR_NOISE_STATUS(SENSOR_NUMBER) (p_selfcap_measure_data-> \
-	p_sensor_noise_status[(SENSOR_NUMBER / \
-	8)] & (1 << (SENSOR_NUMBER % 8))) >> (SENSOR_NUMBER % 8)
+                p_sensor_noise_status[(SENSOR_NUMBER / \
+                8)] & (1 << (SENSOR_NUMBER % 8))) >> (SENSOR_NUMBER % 8)
+				
+/**
+ * \def GET_MUTLCAP_SENSOR_MOIS_STATUS(SNSR_NUM)
+ * \brief To get the mutual capacitance moisture status of a particular sensor 
+ * \param SNSR_NUM for which the moisture status needs to be fetched
+ * \return Returns either 0 or 1
+ * If the bit value is 0, it is not moisture affected
+ * If the bit value is 1, it is moisture affected
+ */
+
+#define GET_MUTLCAP_SENSOR_MOIS_STATUS(SNSR_NUM)  ((p_mutlcap_measure_data->  \
+					p_sensor_mois_status[(SNSR_NUM)/8] & (1<<((SNSR_NUM)%8))) \
+					>>(SNSR_NUM %8))
+
+/**
+ * \def GET_SELFCAP_SENSOR_MOIS_STATUS(SNSR_NUM)
+ * \brief To get the self capacitance moisture status of a particular sensor 
+ * \param SNSR_NUM for which the moisture status needs to be fetched
+ * \return Returns either 0 or 1
+ * If the bit value is 0, it is not moisture affected
+ * If the bit value is 1, it is moisture affected
+ */
+
+#define GET_SELFCAP_SENSOR_MOIS_STATUS(SNSR_NUM)  ((p_selfcap_measure_data->  \
+					p_sensor_mois_status[(SNSR_NUM)/8] & (1<<((SNSR_NUM)%8)))>>\
+					(SNSR_NUM %8))
 
 /**
  * \def GET_ROTOR_SLIDER_POSITION(ROTOR_SLIDER_NUMBER)
@@ -230,12 +267,12 @@ extern "C"
 /**
  * Calculate X line bit position.
  */
-#define X(n) (uint16_t)(1u << n)
+#define X(n) (uint32_t)(1u << n)
 
 /**
  * Calculate Y line bit position.
  */
-#define Y(n) (uint16_t)(1u << n)
+#define Y(n) (uint32_t)(1u << n)
 
 /**
  * Max position hysteresis allowed
@@ -276,7 +313,7 @@ extern "C"
  */
 #define PRIV_MUTLCAP_PAD_BYTE_SIZE    (78u)
 
-#define PRIV_CHANNELS_64_NO                                       (64u)
+#define PRIV_CHANNELS_64_NO                               (64u)
 #define PRIV_BYTES_IN_UINT64                              (8u)
 
 /**
@@ -300,14 +337,10 @@ extern "C"
 	(((((DEF_MUTLCAP_NUM_CHANNELS -	\
 	1u) / \
 	PRIV_CHANNELS_64_NO) + \
-	1u) * PRIV_BYTES_IN_UINT64) * 2u))
-
-#if   ((DEF_MUTLCAP_NOISE_MEAS_ENABLE != 0u) ||	\
-	(DEF_MUTLCAP_FREQ_AUTO_TUNE_ENABLE != 0u))
-#define PRIV_MUTLCAP_NM_TABLE_INIT  touch_mutlcap_noise_mit_table_init
-#else
-#define PRIV_MUTLCAP_NM_TABLE_INIT  NULL
-#endif
+	1u) * PRIV_BYTES_IN_UINT64) * 2u) +\
+	(DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE * DEF_MUTLCAP_NUM_SENSORS *2u) +\
+	(DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE*(DEF_MUTLCAP_NUM_MOIS_GROUPS*8))+\
+	((DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE * DEF_MUTLCAP_NUM_SENSORS+7)/8u))
 
 /**
  * Initialize rotor slider table.
@@ -316,7 +349,7 @@ extern "C"
 #define PRIV_MUTLCAP_RS_TABLE_INIT  touch_mutlcap_rs_table_init
 #else
 #define PRIV_MUTLCAP_RS_TABLE_INIT  NULL
-#endif /* SELF_NUM_ROTORS_SLIDERS*/
+#endif /* MUTUAL_NUM_ROTORS_SLIDERS*/
 
 #endif /* DEF_TOUCH_MUTLCAP. */
 
@@ -374,14 +407,10 @@ extern "C"
 	(DEF_SELFCAP_FREQ_AUTO_TUNE_ENABLE * 2 * \
 	DEF_SELFCAP_NUM_CHANNELS)       + \
 	(PRIV_SELFCAP_PAD_BYTE_SIZE) + \
-	(PRIV_BYTES_IN_UINT64 * 2u))
-
-#if   ((DEF_SELFCAP_NOISE_MEAS_ENABLE != 0u) ||	\
-	(DEF_SELFCAP_FREQ_AUTO_TUNE_ENABLE != 0u))
-#define PRIV_SELFCAP_NM_TABLE_INIT  touch_selfcap_noise_mit_table_init
-#else
-#define PRIV_SELFCAP_NM_TABLE_INIT  NULL
-#endif
+    (PRIV_BYTES_IN_UINT64 * 2u) +\
+	(DEF_SELFCAP_MOIS_TOLERANCE_ENABLE * DEF_SELFCAP_NUM_CHANNELS *2u) +\
+	(DEF_SELFCAP_MOIS_TOLERANCE_ENABLE *(DEF_SELFCAP_NUM_MOIS_GROUPS*8))+\
+	((DEF_SELFCAP_MOIS_TOLERANCE_ENABLE * DEF_SELFCAP_NUM_CHANNELS+7)/8u))
 
 /**
  * Initialize rotor slider table.
@@ -393,6 +422,204 @@ extern "C"
 #endif /* SELF_NUM_ROTORS_SLIDERS*/
 #endif /* DEF_TOUCH_SELFCAP. */
 
+
+#define LUMP_1(n)      ((uint32_t)(1u << n))
+#define LUMP_2(a,b)    ((uint32_t)((1       <<     a)     |      (1     <<     b)))
+#define LUMP_3(a,b,c)  ((uint32_t)((1       <<     a)     |      (1     <<     b)     |      (1       <<     c)))
+#define LUMP_4(a,b,c,d)((uint32_t)((1       <<     a)     |      (1     <<     b)     |       (1     <<     c)     |      (1     <<     d)))
+#define LUMP_5(a,b,c,d,e) ((1 << e) | (LUMP_4(a,b,c,d)))
+#define LUMP_6(a,b,c,d,e,f) ((1 << f) | (LUMP_5(a,b,c,d,e)))
+#define LUMP_7(a,b,c,d,e,f,g) ((1 << g) | (LUMP_6(a,b,c,d,e,f)))
+#define LUMP_8(a,b,c,d,e,f,g,h) ((1 << h) | (LUMP_7(a,b,c,d,e,f,g)))
+#define LUMP_9(a,b,c,d,e,f,g,h,i) ((1 << i) | (LUMP_8(a,b,c,d,e,f,g,h)))
+#define LUMP_10(a,b,c,d,e,f,g,h,i,j) ((1 << j) | (LUMP_9(a,b,c,d,e,f,g,h,i)))
+#define LUMP_11(a,b,c,d,e,f,g,h,i,j,k) ((1 << k) | (LUMP_10(a,b,c,d,e,f,g,h,i,j)))
+#define LUMP_12(a,b,c,d,e,f,g,h,i,j,k,l) ((1 << l) | (LUMP_11(a,b,c,d,e,f,g,h,i,j,k)))
+#define LUMP_13(a,b,c,d,e,f,g,h,i,j,k,l,m) ((1 << m) | (LUMP_12(a,b,c,d,e,f,g,h,i,j,k,l)))
+#define LUMP_14(a,b,c,d,e,f,g,h,i,j,k,l,m,n) ((1 << n) | (LUMP_13(a,b,c,d,e,f,g,h,i,j,k,l,m)))
+#define LUMP_15(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) ((1 << o) | (LUMP_14(a,b,c,d,e,f,g,h,i,j,k,l,m,n)))
+#define LUMP_16(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) ((1 << p) | (LUMP_15(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o)))
+
+#define _NUM_ARGS2(X,X16,X15,X14,X13,X12,X11,X10,X9,X8,X7,X6,X5,X4,X3,X2,X1,N,...) N
+#define NUM_ARGS(...) _NUM_ARGS2(0, __VA_ARGS__ ,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
+/*Two levels are required to Create the macro assignment*/
+#define _LUMP_OF_L1(N, ...) LUMP_ ## N(__VA_ARGS__)
+#define _LUMP_OF_L2(N, ...) _LUMP_OF_L1(N, __VA_ARGS__)
+#define LUMP_X(...)      _LUMP_OF_L2(NUM_ARGS(__VA_ARGS__), __VA_ARGS__)
+#define LUMP_Y(...)      _LUMP_OF_L2(NUM_ARGS(__VA_ARGS__), __VA_ARGS__)
+
+#ifndef DEF_MUTL_AUTO_TUNE_VALUE
+#define DEF_MUTL_AUTO_TUNE_VALUE DEF_AUTO_TUNE_NONE
+#endif
+#ifndef DEF_SELF_AUTO_TUNE_VALUE
+#define DEF_SELF_AUTO_TUNE_VALUE DEF_AUTO_TUNE_NONE
+#endif
+
+#ifndef DEF_MUTLCAP_AUTO_OS
+#define DEF_MUTLCAP_AUTO_OS DEF_AUTO_OS_DISABLE
+#endif
+
+#ifndef DEF_SELFCAP_AUTO_OS
+#define DEF_SELFCAP_AUTO_OS DEF_AUTO_OS_DISABLE
+#endif
+
+#ifndef DEF_MUTLCAP_FREQ_AUTO_TUNE_ENABLE
+#define DEF_MUTLCAP_FREQ_AUTO_TUNE_ENABLE DEF_FREQ_AUTO_TUNE_DISABLE
+#endif
+
+#ifndef DEF_SELFCAP_FREQ_AUTO_TUNE_ENABLE
+#define DEF_SELFCAP_FREQ_AUTO_TUNE_ENABLE DEF_FREQ_AUTO_TUNE_DISABLE
+#endif
+
+#ifndef DEF_MUTLCAP_NOISE_MEAS_ENABLE
+#define DEF_MUTLCAP_NOISE_MEAS_ENABLE DEF_NOISE_MEAS_DISABLE
+#endif
+
+#ifndef DEF_SELFCAP_NOISE_MEAS_ENABLE
+#define DEF_SELFCAP_NOISE_MEAS_ENABLE DEF_NOISE_MEAS_DISABLE
+#endif
+
+#ifndef DEF_MUTLCAP_LOCKOUT_SEL
+#define DEF_MUTLCAP_LOCKOUT_SEL DEF_SENS_LOCKOUT_NO
+#endif
+
+#ifndef DEF_SELFCAP_LOCKOUT_SEL
+#define DEF_SELFCAP_LOCKOUT_SEL DEF_SENS_LOCKOUT_NO
+#endif
+
+#ifndef DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE
+#define DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE DEF_MOIS_TOLERANCE_DISABLE
+#endif
+
+#ifndef DEF_SELFCAP_MOIS_TOLERANCE_ENABLE
+#define DEF_SELFCAP_MOIS_TOLERANCE_ENABLE DEF_MOIS_TOLERANCE_DISABLE
+#endif
+
+#ifndef DEF_MUTLCAP_AKS_ENABLE
+#define DEF_MUTLCAP_AKS_ENABLE DEF_AKS_DISABLE
+#endif
+
+#ifndef DEF_SELFCAP_AKS_ENABLE
+#define DEF_SELFCAP_AKS_ENABLE DEF_AKS_DISABLE
+#endif
+
+#if (DEF_MUTL_AUTO_TUNE_VALUE == DEF_AUTO_TUNE_NONE)
+#define DEF_MUTL_AUTO_TUNE_FUNC		NULL
+#else
+#define DEF_MUTL_AUTO_TUNE_FUNC		mutual_auto_tuning
+#endif
+
+#if (DEF_SELF_AUTO_TUNE_VALUE == DEF_AUTO_TUNE_NONE)
+#define DEF_SELF_AUTO_TUNE_FUNC		NULL
+#else
+#define DEF_SELF_AUTO_TUNE_FUNC		self_auto_tuning
+#endif
+
+#if ((DEF_MUTLCAP_AUTO_OS != DEF_AUTO_OS_DISABLE) || (DEF_SELFCAP_AUTO_OS != DEF_AUTO_OS_DISABLE))
+#define DEF_AUTO_OS_FUNC		auto_os_resolve
+#else
+#define DEF_AUTO_OS_FUNC		NULL
+#endif
+
+#if ((DEF_MUTLCAP_AKS_ENABLE != DEF_AKS_DISABLE) || (DEF_SELFCAP_AKS_ENABLE != DEF_AKS_DISABLE))
+#define DEF_AKS_FUNC		enable_aks
+#else
+#define DEF_AKS_FUNC		NULL
+#endif
+/**
+* Initialize the Frequency Auto tune routine
+*/
+#if ((DEF_MUTLCAP_FREQ_AUTO_TUNE_ENABLE != DEF_FREQ_AUTO_TUNE_DISABLE) || (DEF_SELFCAP_FREQ_AUTO_TUNE_ENABLE != DEF_FREQ_AUTO_TUNE_DISABLE))
+#define PRIV_FREQ_AUTO_TUNE_CHK   chk_frequency_auto_tune
+#else
+#define PRIV_FREQ_AUTO_TUNE_CHK NULL
+#endif /*Frequency Auto tune Enable*/
+
+/**
+* Initialize the Noise Measurement routine
+*/
+#if ((DEF_MUTLCAP_NOISE_MEAS_ENABLE != DEF_NOISE_MEAS_DISABLE) || (DEF_SELFCAP_NOISE_MEAS_ENABLE != DEF_NOISE_MEAS_DISABLE))
+#define PRIV_NM_TABLE_INIT  touch_noise_mit_table_init
+#else
+#define PRIV_NM_TABLE_INIT NULL
+#endif /*Noise Measurement Enable*/
+
+
+#if (((DEF_MUTLCAP_LOCKOUT_SEL != DEF_SENS_LOCKOUT_NO) && (DEF_MUTLCAP_NOISE_MEAS_ENABLE != DEF_NOISE_MEAS_DISABLE))\
+	|| ((DEF_SELFCAP_LOCKOUT_SEL != DEF_SENS_LOCKOUT_NO) && (DEF_SELFCAP_NOISE_MEAS_ENABLE != DEF_NOISE_MEAS_DISABLE)))
+#define  DEF_LOCKOUT_FUNC lk_chk
+#else
+#define DEF_LOCKOUT_FUNC NULL
+#endif /*Lockout Enable*/
+
+/**
+* Initialize the moisture tolerance routine
+*/
+#if ((DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE != DEF_MOIS_TOLERANCE_DISABLE) || (DEF_SELFCAP_MOIS_TOLERANCE_ENABLE != DEF_MOIS_TOLERANCE_DISABLE))
+#define PRIV_MOIS_TOLERANCE_CHK chk_moisture_tolerance
+#else
+#define PRIV_MOIS_TOLERANCE_CHK NULL
+#endif /*Moisture Tolerance Enable*/
+
+/* Moisture Tolerance */
+
+/**
+ * \def GET_MUTLCAP_MOIS_GRP_SUM_DELTA(GRP_ID)
+ * \brief To get the mutual capacitance MOISTURE GROUP SUM DELTA
+ * \param GRP_ID for which the moisture group sum delta needs to be fetched
+ * \return Returns sum delta
+ */
+
+#define GET_MUTLCAP_MOIS_GRP_SUM_DELTA(GRP_ID)	(mois_mutl_grp_delta_arr[(GRP_ID)-1])
+
+
+/**
+ * \def GET_MUTLCAP_MOIS_GRP_ADJ_DELTA(GRP_ID)
+ * \brief To get the mutual capacitance MOISTURE GROUP ADJACENT  DELTA
+ * \param GRP_ID for which the moisture group adjacent delta needs to be fetched
+ * \return Returns  adjacent delta
+ */
+
+#define GET_MUTLCAP_MOIS_GRP_ADJ_DELTA(GRP_ID)  (mois_mutl_grp_adj_delta_arr[(GRP_ID)-1]) 
+
+/**
+ * \def GET_MOIS_MUT_GLOB_LOCK_STATE
+ * \brief To get the mutual capacitance global moisture lockout status
+ * \param none
+ * \return Returns mutual capacitance global moisture lockout status
+ */
+
+#define GET_MOIS_MUT_GLOB_LOCK_STATE	(mois_lock_global_mutl)
+
+
+/**
+ * \def GET_SELFCAP_MOIS_GRP_SUM_DELTA(GRP_ID)
+ * \brief To get the self capacitance MOISTURE GROUP SUM DELTA
+ * \param GRP_ID for which the moisture group sum delta needs to be fetched
+ * \return Returns sum delta
+ */
+
+#define GET_SELFCAP_MOIS_GRP_SUM_DELTA(GRP_ID)  (mois_self_grp_delta_arr[(GRP_ID)-1])
+
+
+/**
+ * \def GET_SELFCAP_MOIS_GRP_ADJ_DELTA(GRP_ID)
+ * \brief To get the self capacitance MOISTURE GROUP ADJACENT  DELTA
+ * \param GRP_ID for which the moisture group adjacent delta needs to be fetched
+ * \return Returns  adjacent delta
+ */
+
+#define GET_SELFCAP_MOIS_GRP_ADJ_DELTA(GRP_ID)	(mois_self_grp_adj_delta_arr[(GRP_ID)-1])
+
+
+/**
+ * \def GET_MOIS_SELF_GLOB_LOCK_STATE
+ * \brief To get the self capacitance global moisture lockout status
+ * \param none
+ * \return Returns  self capacitance global moisture lockout status
+ */
+
+#define GET_MOIS_SELF_GLOB_LOCK_STATE	(mois_lock_global_self)
 /*----------------------------------------------------------------------------
  *                           type definitions
  *
@@ -447,6 +674,7 @@ typedef enum tag_auto_os_t {
 	AUTO_OS_128
 }
 auto_os_t;
+
 /* ! Touch Library error codes. */
 typedef enum tag_touch_ret_t {
 	/* ! Successful completion of operation. */
@@ -564,9 +792,19 @@ typedef enum tag_sensor_type_t {
 	SENSOR_TYPE_KEY,
 	SENSOR_TYPE_ROTOR,
 	SENSOR_TYPE_SLIDER,
+	SENSOR_TYPE_LUMP,
 	MAX_SENSOR_TYPE
 }
 sensor_type_t;
+
+/* Options for the sense type. */
+typedef enum tag_touch_acq_t
+{
+	TOUCH_MUTUAL,
+	TOUCH_SELF,
+	MAX_TOUCH_ACQ
+} touch_acq_t;
+
 /* ! Touch library acquisition mode. */
 typedef enum tag_touch_acq_mode_t {
 	/* ! When Raw acquisition mode is used, the measure_complete_callback */
@@ -590,13 +828,12 @@ touch_acq_mode_t;
  **/
 typedef enum tag_auto_tune_type_t {
 	/*! Auto tuning disabled. */
-	AUTO_TUNE_NONE,
-	/* Auto tune PTC prescaler and sense resistor for best noise
-	 *performance. */
-	AUTO_TUNE_PRSC,
-	/* Auto tune PTC prescaler and sense resistor for least power
-	 *consumption. */
-	AUTO_TUNE_RSEL
+	AUTO_TUNE_NONE = 0,
+	/* Auto tune PTC prescaler and sense resistor for best noise performance. */
+	AUTO_TUNE_PRSC = 1,
+	/* Auto tune PTC prescaler and sense resistor for least power consumption. */
+	AUTO_TUNE_RSEL = 2,
+	
 }
 auto_tune_type_t;
 
@@ -605,7 +842,7 @@ auto_tune_type_t;
  * Example: if Generic clock input to PTC = 4MHz, then:
  *   FREQ_MODE_NONE                     No Frequency hopping
  *   FREQ_MODE_HOP                      Frequency hopping is enabled.
- *   FREQ_MODE_SPREAD                   pread spectrum mode with median filter
+ *   FREQ_MODE_SPREAD                   Spread spectrum mode with median filter
  *disabled.
  *   FREQ_MODE_SPREAD_MEDIAN    Spread spectrum mode with median filter enabled.
  *
@@ -639,7 +876,7 @@ prsc_div_sel_t;
 /**
  * PTC series resistor setting.  For Mutual cap mode, this series
  * resistor is switched internally on the Y-pin.  For Self cap mode,
- * thes series resistor is switched internally on the Sensor pin.
+ * the series resistor is switched internally on the Sensor pin.
  *
  * Example:
  *  RSEL_VAL_0   sets internal series resistor to 0ohms.
@@ -720,7 +957,7 @@ aks_group_t;
  *    HYST_50   = 10 (50% of 20)
  *    HYST_25   = 5  (25% of 20)
  *    HYST_12_5 = 2  (12.5% of 20)
- *    HYST_6_25 = 2  (6.25% of 20 = 1, but value is hardlimited to 2)
+ *    HYST_6_25 = 2  (6.25% of 20 = 1, but value is hard-limited to 2)
  */
 typedef enum tag_hysteresis_t {
 	HYST_50,
@@ -743,7 +980,7 @@ hysteresis_t;
  *     RECAL_50   = 20 (50% of 40)
  *     RECAL_25   = 10 (25% of 40)
  *     RECAL_12_5 = 5  (12.5% of 40)
- *     RECAL_6_25 = 4  (6.25% of 40 = 2, but value is hardlimited to 4)
+ *     RECAL_6_25 = 4  (6.25% of 40 = 2, but value is hard-limited to 4)
  */
 typedef enum tag_recal_threshold_t {
 	RECAL_100,
@@ -785,6 +1022,57 @@ typedef enum tag_sensor_lockout_t {
 	NO_LOCKOUT
 }
 nm_sensor_lockout_t;
+
+/**Structure for storing moisture multi touch group info 
+ * 
+ */
+typedef struct tag_snsr_mois_t{
+/** moisture group member */
+uint8_t mois_grp;
+/** multi touch group member */
+uint8_t multch_grp;
+
+}snsr_mois_t;
+
+/**  Moisture Groups 
+ *
+ */
+typedef enum tag_moisture_grp{
+	MOIS_DISABLED=0,
+	MOIS_GROUP_0,
+	MOIS_GROUP_1,
+	MOIS_GROUP_2,
+	MOIS_GROUP_3,
+	MOIS_GROUP_4,
+	MOIS_GROUP_5,
+	MOIS_GROUP_6,
+	MOIS_GROUP_7,
+	MOIS_GROUPN
+}moisture_grp_t;
+
+/*  Multi touch Groups Enumeration for
+ *  moisture Group
+ */
+
+typedef enum tag_mltch_grp{
+	MLTCH_NONE    = (0 << 0u),
+	MLTCH_GROUP_0 = (1 << 0u),
+	MLTCH_GROUP_1 = (1 << 1u),
+	MLTCH_GROUP_2 = (1 << 2u),
+	MLTCH_GROUP_3 = (1 << 3u),
+	MLTCH_GROUP_4 = (1 << 4u),
+	MLTCH_GROUP_5 = (1 << 5u),
+	MLTCH_GROUP_6 = (1 << 6u),
+	MLTCH_GROUP_7 = (1 << 7u),
+	MLTCH_GROUP_Max = MLTCH_GROUP_7
+}mltch_grp_t;
+
+/** Typedef for moisture sensor threshold */
+typedef int32_t mois_snsr_threshold_t;
+
+/** Typedef for moisture system threshold */
+typedef int32_t mois_system_threshold_t;
+
 /* ! Touch Library Timing info. */
 typedef struct tag_touch_time_t {
 	/* ! Touch Measurement period in milliseconds.  This variable determines
@@ -796,6 +1084,7 @@ typedef struct tag_touch_time_t {
 	volatile uint16_t current_time_ms;
 	/* ! Flag set by timer ISR when it's time to measure touch. */
 	volatile uint8_t time_to_measure_touch;
+
 }
 touch_time_t;
 
@@ -807,13 +1096,11 @@ typedef struct tag_sensor_t {
 	uint8_t general_counter;
 	/* ! Detect Integration ctr. */
 	uint8_t ndil_counter;
-	/* ! Noise counter */
-	/* uint8_t noise_counter; */
 
 	/* ! bits 7..6: sensor type: */
 	/* ! {00: key,01: rotor,10: slider,11: reserved} */
 	/* ! bits 5..3: AKS group (0..7): 0 = no AKS group */
-	/* ! bit 2    : positive recal flag */
+	/* ! bit 2    : positive re-cal flag */
 	/* ! bits 1..0: hysteresis */
 	uint8_t type_aks_pos_hyst;
 
@@ -857,18 +1144,24 @@ typedef struct tag_touch_global_param_t {
 	recal_threshold_t recal_threshold;
 	/* ! Touch Post processing mode */
 	uint16_t touch_postprocess_mode;
-	/* auto tune Stability limit */
-	uint16_t auto_tune_sig_stability_limit;
-	/*frequency tune in/out limit*/
-	uint8_t auto_freq_tune_in_cnt;
-	/*noise sig stability limit*/
-	uint16_t nm_sig_stability_limit;
-	/*noise threshold limit*/
-	uint8_t nm_noise_limit;
-	/*global lockout configuration*/
-	nm_sensor_lockout_t nm_enable_sensor_lock_out;
-	/*lockout count down cycles */
-	uint8_t nm_lockout_countdown;
+	/* auto oversamples Stability limit */
+	uint16_t auto_os_sig_stability_limit;
+  /* auto tune Stability limit */
+  uint16_t auto_tune_sig_stability_limit;
+  /*frequency tune in/out limit*/
+  uint8_t auto_freq_tune_in_cnt;
+  /*noise sig stability limit*/
+  uint16_t nm_sig_stability_limit;
+  /*noise threshold limit*/
+  uint8_t nm_noise_limit;
+ /*global lockout configuration*/
+  nm_sensor_lockout_t nm_enable_sensor_lock_out;
+ /*lockout count down cycles */
+  uint8_t nm_lockout_countdown;
+  #if ((SAMC21) || (SAMC20))
+  /*charge_share_delay parameter for the PTC*/
+  uint8_t charge_share_delay;
+  #endif
 }
 touch_global_param_t;
 
@@ -882,7 +1175,7 @@ typedef struct tag_touch_filter_data_t {
 touch_filter_data_t;
 
 /* ! Touch Measured data type. */
-typedef struct tag_touch_measure_data_t {
+typedef volatile struct tag_touch_measure_data_t {
 	/* ! Flag set by touch_xxcap_measure_complete_callback() function when
 	 * a fresh Touch */
 	/* ! status is available. */
@@ -915,8 +1208,12 @@ typedef struct tag_touch_measure_data_t {
 	uint8_t *p_sensor_noise_status;
 	/*the noise level or value of each channel*/
 	uint16_t *p_nm_ch_noise_val;
-
+	/*!Pointer to Moisture Status */
+	uint8_t *p_sensor_mois_status;
+	/* flag indicates cc calibration process */
 	uint8_t cc_calib_status_flag;
+
+
 }
 touch_measure_data_t;
 
@@ -928,7 +1225,6 @@ typedef struct tag_touch_selfcap_param_t {
 	threshold_t detect_threshold;
 	/* ! Sensor detection hysteresis. */
 	hysteresis_t detect_hysteresis;
-
 	/* ! Sensor position resolution. This is valid only for a Rotor or
 	 * Slider. */
 	resolution_t position_resolution;
@@ -955,19 +1251,20 @@ typedef struct tag_touch_mutlcap_param_t {
 }
 touch_mutlcap_param_t;
 /* ! Mutual capacitance sensor acquisition parameter type. */
-typedef struct tag_touch_mutlcap_acq_param_t {
+  typedef struct tag_touch_mutlcap_acq_param_t
+  {
 	/* !pointer to gain per node */
 	gain_t *p_mutlcap_gain_per_node;
 	/* ! setup acquisition frequency mode */
 	freq_mode_sel_t touch_mutlcap_freq_mode;
-	/* ! PTC clock prescale value */
-	prsc_div_sel_t mutlcap_ptc_prsc;
+	/* ! PTC clock prescaler value */
+	prsc_div_sel_t *mutlcap_ptc_prsc;
 	/* ! PTC series resistor value */
-	rsel_val_t mutlcap_resistor_value;
-	/* ! PTC clock prescale value during CC cal */
-	prsc_div_sel_t mutlcap_ptc_prsc_cc_cal;
+	rsel_val_t *mutlcap_resistor_value;
+	/* ! PTC clock prescaler value during CC cal */
+	prsc_div_sel_t *mutlcap_ptc_prsc_cc_cal;
 	/* ! PTC series resistor value during CC cal */
-	rsel_val_t mutlcap_resistor_value_cc_cal;
+	rsel_val_t *mutlcap_resistor_value_cc_cal;
 	/* !pointer to acquisition frequency settings */
 	freq_hop_sel_t *p_mutlcap_hop_freqs;
 	/* ! filter level */
@@ -978,19 +1275,20 @@ typedef struct tag_touch_mutlcap_acq_param_t {
 touch_mutlcap_acq_param_t;
 
 /* ! Self capacitance sensor acquisition parameter type. */
-typedef struct tag_touch_selfcap_acq_param_t {
+  typedef struct tag_touch_selfcap_acq_param_t
+  {
 	/* !pointer to gain per node */
 	gain_t *p_selfcap_gain_per_node;
 	/* ! enable/disable noise counter-measures */
 	freq_mode_sel_t touch_selfcap_freq_mode;
-	/* ! PTC clock prescale value */
-	prsc_div_sel_t selfcap_ptc_prsc;
+	/* ! PTC clock prescaler value */
+	prsc_div_sel_t *selfcap_ptc_prsc;
 	/* ! PTC sense resistor value */
-	rsel_val_t selfcap_resistor_value;
-	/* ! PTC clock prescale value during CC cal */
-	prsc_div_sel_t selfcap_ptc_prsc_cc_cal;
+	rsel_val_t *selfcap_resistor_value;
+	/* ! PTC clock prescaler value during CC cal */
+	prsc_div_sel_t *selfcap_ptc_prsc_cc_cal;
 	/* ! PTC sense resistor value during CC cal */
-	rsel_val_t selfcap_resistor_value_cc_cal;
+	rsel_val_t *selfcap_resistor_value_cc_cal;
 	/* !pointer to hop frequency options */
 	freq_hop_sel_t *p_selfcap_hop_freqs;
 	/* ! filter level */
@@ -999,6 +1297,49 @@ typedef struct tag_touch_selfcap_acq_param_t {
 	auto_os_t selfcap_auto_os;
 }
 touch_selfcap_acq_param_t;
+
+  //! QTouch capacitance sensor acquisition parameter type.
+  typedef struct tag_touch_acq_param_t
+  {
+
+			//!pointer to gain per node
+			gain_t *p_gain_per_node;
+
+			//! enable/disable noise counter-measures
+			freq_mode_sel_t touch_freq_mode;
+
+			//! PTC clock prescaler value
+			prsc_div_sel_t *ptc_prsc;
+
+			//! PTC sense resistor value
+			rsel_val_t *resistor_value;
+
+			//! PTC clock prescaler value during CC cal
+			prsc_div_sel_t *ptc_prsc_cc_cal;
+
+			//! PTC sense resistor value during CC cal
+			rsel_val_t *resistor_value_cc_cal;
+
+			//!pointer to hop frequency options
+			freq_hop_sel_t *p_hop_freqs;
+
+			//! filter level
+			filter_level_t filter_level;
+
+			//! auto oversampling
+			auto_os_t auto_os;
+
+  }
+  touch_acq_param_t;
+  
+typedef struct tag_tlib_init_fn_ptr_t
+{
+	void (*auto_tune_init) (void *, uint8_t,uint16_t);
+	uint32_t (*auto_os_init) (void *, uint16_t);
+	void (*lk_chk) (void *, uint16_t, uint16_t);
+	void (*enable_aks)(void);
+} tlib_init_fn_ptr;
+
 
 /* ! Self Capacitance configuration input. */
 typedef struct tag_touch_selfcap_config_t {
@@ -1017,8 +1358,8 @@ typedef struct tag_touch_selfcap_config_t {
 	/* ! size of data block buffer */
 	uint16_t buffer_size;
 	/* !pointer to xy nodes */
-	uint16_t *p_selfcap_y_nodes;
-	/* !enable or disable quick reburst response time feature */
+	uint32_t *p_selfcap_y_nodes;
+	/* !enable or disable quick re-burst response time feature */
 	uint8_t self_quick_reburst_enable;
 	/* !callback to process sensor signal values before post-processing */
 	void (*filter_callback)(touch_filter_data_t *p_filter_data);
@@ -1028,6 +1369,14 @@ typedef struct tag_touch_selfcap_config_t {
 	uint8_t enable_noise_measurement;
 	/* !Memory Allocation Buffer */
 	uint8_t nm_buffer_cnt;
+	/* !Self moisture tolerance enable flag */
+	uint8_t self_mois_tlrnce_enable; /* % moisture tolerance% */
+	/* !Self cap moisture number of groups */
+	uint8_t self_mois_groups;
+	/* Moisture Quick Re burst Enable */
+	uint8_t self_mois_quick_reburst_enable;    
+    /*Feature list pointers*/
+    tlib_init_fn_ptr tlib_feature_list;
 }
 touch_selfcap_config_t;
 /* ! Mutual Capacitance configuration input. */
@@ -1040,24 +1389,32 @@ typedef struct tag_touch_mutlcap_config_t {
 	uint8_t num_rotors_and_sliders;
 	/* !global sensor configuration info. */
 	touch_global_param_t global_param;
-	/* !sensor acquisition param info. */
+	//!sensor acquisition param info.
 	touch_mutlcap_acq_param_t touch_mutlcap_acq_param;
 	/* ! Pointer to data block buffer. */
 	uint8_t *p_data_blk;
 	/* ! size of data block buffer */
 	uint16_t buffer_size;
 	/* !pointer to xy nodes */
-	uint16_t *p_mutlcap_xy_nodes;
-	/* !enable or disable quick reburst response time feature */
-	uint8_t mutl_quick_reburst_enable;
-	/* !callback to process sensor signal values before post-processing */
-	void (*filter_callback)(touch_filter_data_t *p_filter_data);
-	/* !frequency hop : auto tunuing enable* / */
-	uint8_t enable_freq_auto_tune;
-	/* !Noise measurement enable */
-	uint8_t enable_noise_measurement;
-	/* !Memory Allocation Buffer */
-	uint8_t nm_buffer_cnt;
+	uint32_t *p_mutlcap_xy_nodes;
+  /* !enable or disable quick reburst response time feature */
+  uint8_t mutl_quick_reburst_enable;
+  /* !callback to process sensor signal values before post-processing */
+  void (*filter_callback)(touch_filter_data_t *p_filter_data);
+  //!frequency hop : auto tunuing enable*/
+  uint8_t enable_freq_auto_tune;
+  //!Noise measurement enable
+  uint8_t enable_noise_measurement;
+  //!Memory Allocation Buffer
+  uint8_t nm_buffer_cnt;
+  //! mutual cap moisture tolerance enable flag
+  uint8_t mutl_mois_tlrnce_enable;
+  //! mutual cap moisture number of groups
+  uint8_t mutl_mois_groups;
+  /* Moisture Quick Re burst Enable */
+  uint8_t mutl_mois_quick_reburst_enable;
+    /*Feature list pointers*/
+    tlib_init_fn_ptr tlib_feature_list;
 }
 touch_mutlcap_config_t;
 
@@ -1073,7 +1430,7 @@ typedef struct tag_touch_config_t {
 touch_config_t;
 
 /* ! Touch library information type. */
-typedef struct tag_touch_info_t {
+typedef volatile struct tag_touch_info_t {
 	/* ! Touch Library state specific to method. */
 	touch_lib_state_t tlib_state;
 
@@ -1099,7 +1456,11 @@ typedef struct tag_touch_libver_info_t {
 	uint32_t chip_id;
 	/* ! Product ID */
 	uint16_t product_id;
-	/* ! Touch Library version. */
+	/* ! Touch Library version
+        Bits[12:15] Reserved
+        Bits[8:11] TLIB_MAJOR_VERSION
+        Bits[4:7] TLIB_MINOR_VERSION
+        Bits[0:3] TLIB_PATCH_VERSION 	*/
 	uint16_t fw_version;
 }
 touch_libver_info_t;
@@ -1117,12 +1478,16 @@ touch_libver_info_t;
  *----------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------
- *                               extern variables
- *
- *
- *----------------------------------------------------------------------------*/
+*                               extern variables
+*  ----------------------------------------------------------------------------*/
 /* ! Touch Library Timing info. */
 extern touch_time_t touch_time;
+
+/**
+ CC calibration signal limit variables, Range 0-1024
+*/
+extern uint16_t cc_cal_max_signal_limit;
+extern uint16_t cc_cal_min_signal_limit;
 
 /* ! Self capacitance method measured data pointer. */
 extern touch_measure_data_t *p_selfcap_measure_data;
@@ -1130,11 +1495,24 @@ extern touch_measure_data_t *p_selfcap_measure_data;
 /* ! Mutual capacitance method measured data pointer. */
 extern touch_measure_data_t *p_mutlcap_measure_data;
 
+extern void (* volatile touch_suspend_app_cb) (void);
+
+/* ! Wake up touch status Lib to Application  */
+extern uint8_t wake_up_touch;
+
+/* ! Low power mode status Application to Lib */
+extern uint8_t low_power_mode;
+
+extern int32_t mois_mutl_grp_delta_arr[] ;
+extern int32_t mois_mutl_grp_adj_delta_arr[] ;
+extern uint8_t mois_lock_global_mutl;
+
+extern int32_t mois_self_grp_delta_arr[] ;
+extern int32_t mois_self_grp_adj_delta_arr[] ;
+extern uint8_t mois_lock_global_self;
 /*----------------------------------------------------------------------------
- *                               static variables
- *
- *
- *----------------------------------------------------------------------------*/
+*                               static variables
+*  ----------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------
  *                               prototypes
@@ -1156,6 +1534,11 @@ touch_ret_t touch_sensors_init(void);
  * \return touch_ret_t: Touch Library Error status.
  */
 touch_ret_t touch_sensors_measure(void);
+/*! \brief This API is used to update Timing info for Touch Library.
+ * Typical usage of this API is inside a periodic timer ISR.
+ * \return touch_ret_t: Touch Library Error status.
+ */
+void touch_sensors_update_time(void);
 
 /* ! @} */
 
@@ -1174,14 +1557,14 @@ touch_ret_t touch_sensors_measure(void);
  */
 #define touch_mutlcap_sensors_init( y )	\
 	touch_mutlcap_sensors_init_with_rs_table((y), \
-		PRIV_MUTLCAP_RS_TABLE_INIT, PRIV_MUTLCAP_NM_TABLE_INIT);
+		PRIV_MUTLCAP_RS_TABLE_INIT, PRIV_NM_TABLE_INIT,PRIV_FREQ_AUTO_TUNE_CHK,PRIV_MOIS_TOLERANCE_CHK);
 
 /**
  * touch_ret_t touch_selfcap_sensors_init( touch_config_t *p_touch_config);
  */
 #define touch_selfcap_sensors_init( y )	\
 	touch_selfcap_sensors_init_with_rs_table((y), \
-		PRIV_SELFCAP_RS_TABLE_INIT, PRIV_SELFCAP_NM_TABLE_INIT);
+		PRIV_SELFCAP_RS_TABLE_INIT, PRIV_NM_TABLE_INIT,PRIV_FREQ_AUTO_TUNE_CHK,PRIV_MOIS_TOLERANCE_CHK);
 
 /*! \brief This API is used to initialize the Touch Library with Mutual cap
  * method
@@ -1190,9 +1573,8 @@ touch_ret_t touch_sensors_measure(void);
  * \param  p_touch_config: Pointer to Touch configuration structure.
  * \return touch_ret_t: Touch Library Error status.
  */
-touch_ret_t touch_mutlcap_sensors_init_with_rs_table(
-		touch_config_t *p_touch_config,
-		void (*rs_table_init)(void), void (*nm_table_init)(void));
+  touch_ret_t touch_mutlcap_sensors_init_with_rs_table (touch_config_t *p_touch_config,
+						   void (*rs_table_init)(void), void (*nm_table_init)(void), void (*frequency_auto_tune_en)(touch_acq_t ), void (*mois_tole_en)(void *));
 
 /*! \brief This API is used to initialize the Touch Library with Self cap method
  * pin, register and sensor configuration provided by the user.
@@ -1200,12 +1582,9 @@ touch_ret_t touch_mutlcap_sensors_init_with_rs_table(
  * \param  p_touch_config: Pointer to Touch configuration structure.
  * \return touch_ret_t: Touch Library Error status.
  */
-touch_ret_t touch_selfcap_sensors_init_with_rs_table(
-		touch_config_t *p_touch_config,
-		void (*rs_table_init)(void), void (*nm_table_init)(void));
-
-/*! \brief This API can be used to configure a sensor of type key, rotor or
- * slider.
+touch_ret_t touch_selfcap_sensors_init_with_rs_table( touch_config_t *p_touch_config,
+							void (*rs_table_init)(void), void (*nm_table_init)(void), void (*frequency_auto_tune_en)(touch_acq_t ), void (*mois_tole_en)(void *));
+/*! \brief This API can be used to configure a sensor of type key, rotor or slider.
  *
  * \param  sensor_type: can be of type key, rotor or slider.
  * \param  from_channel: the first channel in the slider sensor.
@@ -1257,22 +1636,33 @@ touch_ret_t touch_selfcap_sensors_calibrate(auto_tune_type_t );
  * \return touch_ret_t: Touch Library Error status.
  */
 touch_ret_t touch_selfcap_sensors_measure(
-		touch_current_time_t
-		current_time_ms,
-		touch_acq_mode_t
-		selfcap_acq_mode,
-		void
-		(*measure_complete_callback)
-		(void));
+		touch_current_time_t current_time_ms,
+		touch_acq_mode_t selfcap_acq_mode,
+		void (*measure_complete_callback) (void));
 
 touch_ret_t touch_mutlcap_sensors_measure(
-		touch_current_time_t
-		current_time_ms,
-		touch_acq_mode_t
-		mutlcap_acq_mode,
-		void
-		(*measure_complete_callback)
-		(void));
+		touch_current_time_t current_time_ms,
+		touch_acq_mode_t mutlcap_acq_mode,
+		void (*measure_complete_callback) (void));
+
+/*! \brief This API is used to start a event triggered based mutualcap  low power sensor 
+ *	measure	
+ *
+ * \param sensor_id: Low power sensor id
+ * \return touch_ret_t: Touch Library Error status.
+ */
+
+touch_ret_t  touch_mutual_lowpower_sensor_enable_event_measure(sensor_id_t sensor_id);
+
+
+/*! \brief This API is used to start a event triggered based selfcap  low power sensor
+ *	measure
+ *
+ * \param sensor_id: Low power sensor id
+ * \return touch_ret_t: Touch Library Error status.
+ */
+
+touch_ret_t  touch_self_lowpower_sensor_enable_event_measure(sensor_id_t sensor_id);
 
 /*! \brief This API can be used retrieve the delta value corresponding to
  * a given sensor.
@@ -1331,8 +1721,7 @@ touch_ret_t touch_mutlcap_sensor_update_acq_config(
 touch_ret_t touch_selfcap_sensor_update_acq_config(
 		touch_selfcap_acq_param_t *p_touch_selfcap_acq_param );
 
-/*! \brief This API can be used to read back the sensor configuration
- * parameters.
+/*! \brief This API can be used to read back the sensor configuration parameters.
  *  \param p_sensor_id: The sensor id for which configuration parameter
  *         information is being set.
  *  \param p_touch_sensor_param: The touch sensor parameter structure that will
@@ -1370,23 +1759,144 @@ touch_ret_t touch_selfcap_get_global_param(touch_global_param_t *p_global_param 
 
 /*! \brief This API can be used to disable any sensor
  *
- *  \param p_global_param: Sensor number which needs to be disabled
+ *  \param sensor_id: Sensor number which needs to be disabled
  *
  *  \return touch_ret_t: Touch Library Error status.
  */
 touch_ret_t touch_mutlcap_sensor_disable(sensor_id_t sensor_id);
 
 touch_ret_t touch_selfcap_sensor_disable(sensor_id_t sensor_id);
-
 /*! \brief This API can be used to reenable a disabled sensor
  *
  *  \param p_global_param: Sensor number which needs to be reenabled
- *
+ *  \param no_calib if set then the calibration for the sensor is not forced.
  *  \return touch_ret_t: Touch Library Error status.
  */
-touch_ret_t touch_mutlcap_sensor_reenable(sensor_id_t sensor_id);
+touch_ret_t touch_mutlcap_sensor_reenable(sensor_id_t sensor_id, uint8_t no_calib);
 
-touch_ret_t touch_selfcap_sensor_reenable(sensor_id_t sensor_id);
+touch_ret_t touch_selfcap_sensor_reenable(sensor_id_t sensor_id, uint8_t no_calib);
+
+/*----------------------------------------------------------------------------
+*                  Moisture Tolerance API
+*-----------------------------------------------------------------------------*/
+
+
+ /*! \brief This API can be used to Configures self cap sensor in the moisture group and multi touch group
+  *
+  *  \param  snsr_id: The sensor id for which configuration parameter
+  *                  information is being set
+  *  \param  mois_grpid:  Moisture group id
+  *  \param  mltch_grpid: Multi touch group id
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_selfcap_cnfg_mois_mltchgrp(sensor_id_t snsr_id,moisture_grp_t mois_grpid,mltch_grp_t mltch_grpid);
+
+ /*! \brief This API can be used to Configures mutual cap sensor in the moisture group and multi touch group
+  *
+  *  \param  snsr_id: The sensor id for which configuration parameter
+  *                  information is being set
+  *  \param  mois_grpid:  Moisture group id
+  *  \param  mltch_grpid: Multi touch group id
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_mutlcap_cnfg_mois_mltchgrp(sensor_id_t snsr_id,moisture_grp_t mois_grpid,mltch_grp_t mltch_grpid);
+
+
+ /*! \brief This API can be used to Configures self cap  moisture group sensor moisuture lock and system
+  *                                                          moisture lock threshold
+  *  \param  mois_grpid: Moisture group id
+  *
+  *  \param  snsr_threshold:  sensor moisuture lock threshold
+  *  \param  system_threshold: system  moisuture lock threshold
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_selfcap_cnfg_mois_threshold(moisture_grp_t mois_grpid,mois_snsr_threshold_t snsr_threshold,mois_system_threshold_t system_threshold);
+
+
+ /*! \brief This API can be used to Configures mutual cap  moisture group sensor moisuture lock and system
+  *                                                          moisture lock threshold
+  *  \param  mois_grpid: Moisture group id
+  *
+  *  \param  snsr_threshold:  sensor moisuture lock threshold
+  *  \param  system_threshold: system  moisuture lock threshold
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_mutlcap_cnfg_mois_threshold(moisture_grp_t mois_grpid,mois_snsr_threshold_t snsr_threshold,mois_system_threshold_t system_threshold);
+
+ /*! \brief This API can be used to enable mutual cap  moisture tolerance feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_mutlcap_mois_tolrnce_enable(void);
+
+ /*! \brief This API can be used to disable mutual cap  moisture tolerance feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_mutlcap_mois_tolrnce_disable(void);
+
+ /*! \brief This API can be used to enable mutual cap moisture tolerance quick reburst feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+touch_ret_t touch_mutlcap_mois_tolrnce_quick_reburst_enable(void);
+
+
+ /*! \brief This API can be used to disable mutual cap moisture tolerance quick reburst feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+touch_ret_t touch_mutlcap_mois_tolrnce_quick_reburst_disable(void);
+
+ /*! \brief This API can be used to enable self cap  moisture tolerance feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+
+
+touch_ret_t touch_selfcap_mois_tolrnce_enable(void);
+
+/*! \brief This API can be used to disable self cap  moisture tolerance feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_selfcap_mois_tolrnce_disable(void);
+
+ /*! \brief This API can be used to enable self cap  moisture tolerance quick re-burst feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+touch_ret_t touch_selfcap_mois_tolrnce_quick_reburst_enable(void);
+
+/*! \brief This API can be used to disable self cap moisture tolerance quick re-burst feature
+  *
+  *  \param  void:
+  *
+  *  \return touch_ret: Return the touch status
+  */
+
+touch_ret_t touch_selfcap_mois_tolrnce_quick_reburst_disable(void);
 
 /*! \brief This API can be used to get the Touch Library configuration
  *
@@ -1399,24 +1909,46 @@ touch_ret_t touch_mutlcap_get_libinfo( touch_info_t *p_touch_info );
 
 touch_ret_t touch_selfcap_get_libinfo(touch_info_t *p_touch_info );
 
-/*! \brief This API can be used to get the Touch Library version information
+/*! \brief This API is to suspend the PTC controller to shutdown through the library
+ *  To suspend attach the touch_supend_cb function before calling the suspend call.
  *
- *  \param p_touch_info: Pointer to the Touch Library version info data
- *structure that will be
+ *  For more details check the user manual
+ *  \return touch_ret_t: Touch Library Error status.
+ */
+touch_ret_t  touch_suspend_ptc(void);
+/*! \brief This API is to resume the PTC controller through the library
+ *  To suspend attach the touch_supend_cb function before calling the suspend call.
+ *
+ *  For more details check the user manual
+ *  \return touch_ret_t: Touch Library Error status.
+ */
+touch_ret_t  touch_resume_ptc(void);
+/*! \brief De-init function for the Mutual cap nodes.
+ *
+ *  \return touch_ret_t: Touch Library Error status.
+ */
+touch_ret_t touch_mutlcap_sensors_deinit(void);
+/*! \brief De-init function for the Self cap nodes.
+ *
+ * \return touch_ret_t: Touch Library Error status.
+ */
+touch_ret_t touch_selfcap_sensors_deinit(void);
+
+
+/*! \brief This API can be used to get the Touch Library configuration
+ *
+ *  \param p_touch_info: Pointer to the Touch Library Version info data structure that will be
  *                       updated by the Touch Library.
  *
  *  \return touch_ret_t: Touch Library Error status.
  */
-touch_ret_t touch_library_get_version_info(
-		touch_libver_info_t *p_touch_libver_info_t );
+touch_ret_t touch_library_get_version_info( touch_libver_info_t *p_touch_libver_info_t );
 
 /* ! @} */
 
 /*----------------------------------------------------------------------------
- *                          Extern Functions
- *
- *
- *----------------------------------------------------------------------------*/
+*                          Extern Objects
+*  ----------------------------------------------------------------------------*/
 
 /*! \name Touch Library internal use functions.
  */
@@ -1427,14 +1959,21 @@ touch_ret_t touch_library_get_version_info(
  */
 void touch_mutlcap_rs_table_init(void);
 void touch_selfcap_rs_table_init(void);
-void touch_mutlcap_noise_mit_table_init(void);
-void touch_selfcap_noise_mit_table_init(void);
 
+void mutual_auto_tuning(void *, uint8_t, uint16_t);
+void self_auto_tuning(void *, uint8_t, uint16_t);
+
+uint32_t auto_os_resolve(void *, uint16_t );
+void chk_frequency_auto_tune(touch_acq_t u32_acq_type);
+void touch_noise_mit_table_init(void);
+void lk_chk (void * , uint16_t ,uint16_t);
+void chk_moisture_tolerance(void *);
+void enable_aks(void);
 /* ! @} */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif                          /* TOUCH_API_SAMD_H */
-#endif                          /* #if((QTOUCH_SUPPORT == 1) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK_REV2)) */
+#endif                          /* TOUCH_API_PTC_H */
+#endif

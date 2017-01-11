@@ -58,7 +58,11 @@
  *
  *
  *----------------------------------------------------------------------------*/
-#if((QTOUCH_SUPPORT == 1) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK))
+#if((QTOUCH_SUPPORT == 1) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFRINGQT)))
+#if (BSP_SUPPORT == BOARD_RFRINGQT)
+	#error "(BSP_SUPPORT == BOARD_RFRINGQT) no QTouch support implemented"
+#endif
+
 /**
  * Includes for Touch Library.
  */
@@ -70,11 +74,19 @@
  *
  *
  *----------------------------------------------------------------------------*/
+#if (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
 #define   DEF_MUTLCAP_CAL_SEQ1_COUNT            8
 #define   DEF_MUTLCAP_CAL_SEQ2_COUNT            4
-#define   DEF_MUTLCAP_CC_CAL_CLK_PRESCALE       PRSC_DIV_SEL_8
-#define   DEF_MUTLCAP_CC_CAL_SENSE_RESISTOR     RSEL_VAL_100
+#define   DEF_MUTLCAP_CC_CAL_CLK_PRESCALE_PER_NODE       PRSC_DIV_SEL_8
+#define   DEF_MUTLCAP_CC_CAL_SENSE_RESISTOR_PER_NODE     RSEL_VAL_100
 #define   DEF_MUTLCAP_QUICK_REBURST_ENABLE      1u
+#else
+#define   DEF_MUTLCAP_CAL_SEQ1_COUNT            8
+#define   DEF_MUTLCAP_CAL_SEQ2_COUNT            4
+#define   DEF_MUTLCAP_CC_CAL_CLK_PRESCALE_PER_NODE       PRSC_DIV_SEL_2
+#define   DEF_MUTLCAP_CC_CAL_SENSE_RESISTOR_PER_NODE     RSEL_VAL_0
+#define   DEF_MUTLCAP_QUICK_REBURST_ENABLE      1u
+#endif
 
 /*----------------------------------------------------------------------------
  *                                   macros
@@ -129,13 +141,19 @@ static uint8_t mutlcap_data_blk[PRIV_MUTLCAP_DATA_BLK_SIZE];
  * Mutual Cap Sensor Pins Info.
  */
 
-uint16_t mutlcap_xy_nodes[DEF_MUTLCAP_NUM_CHANNELS * 2] = {DEF_MUTLCAP_NODES};
+uint32_t mutlcap_xy_nodes[DEF_MUTLCAP_NUM_CHANNELS * 2] = {DEF_MUTLCAP_NODES};
 
-gain_t mutlcap_gain_per_node[DEF_MUTLCAP_NUM_CHANNELS]
-	= {DEF_MUTLCAP_GAIN_PER_NODE};
+gain_t mutlcap_gain_per_node[DEF_MUTLCAP_NUM_CHANNELS] = {DEF_MUTLCAP_GAIN_PER_NODE};
+		
+rsel_val_t mutlcap_resistor_per_node[DEF_MUTLCAP_NUM_CHANNELS] = {DEF_MUTLCAP_SENSE_RESISTOR_PER_NODE};
 
-freq_hop_sel_t mutlcap_freq_hops[3u]
-	= {DEF_MUTLCAP_HOP_FREQS};
+prsc_div_sel_t mutlcap_prsc_per_node[DEF_MUTLCAP_NUM_CHANNELS] = {DEF_MUTLCAP_CLK_PRESCALE_PER_NODE};
+
+prsc_div_sel_t mutlcap_boot_prsc_per_node[DEF_MUTLCAP_NUM_CHANNELS] = {[0 ... (DEF_MUTLCAP_NUM_CHANNELS -1)] = DEF_MUTLCAP_CC_CAL_CLK_PRESCALE_PER_NODE};
+
+rsel_val_t mutlcap_boot_resistor_per_node[DEF_MUTLCAP_NUM_CHANNELS] = {[0 ... (DEF_MUTLCAP_NUM_CHANNELS -1)] = DEF_MUTLCAP_CC_CAL_SENSE_RESISTOR_PER_NODE};
+
+freq_hop_sel_t mutlcap_freq_hops[3u] = {DEF_MUTLCAP_HOP_FREQS};
 
 /**
  * Mutual Cap Configuration structure provided as input to Touch Library.
@@ -174,6 +192,7 @@ static touch_mutlcap_config_t mutlcap_config = {
 		                                   * recal_threshold; Sensor
 		                                   * recalibration threshold. */
 		DEF_MUTLCAP_TOUCH_POSTPROCESS_MODE,
+		DEF_MUTLCAP_AUTO_OS_SIGNAL_STABILITY_LIMIT,
 		DEF_MUTLCAP_FREQ_AUTO_TUNE_SIGNAL_STABILITY_LIMIT,
 		DEF_MUTLCAP_FREQ_AUTO_TUNE_IN_CNT,
 		DEF_MUTLCAP_NOISE_MEAS_SIGNAL_STABILITY_LIMIT, /* signal
@@ -186,10 +205,10 @@ static touch_mutlcap_config_t mutlcap_config = {
 		mutlcap_gain_per_node,  /* Mutual Cap channel gain setting. */
 		DEF_MUTLCAP_FREQ_MODE, /* Mutual Cap noise counter measure
 		                        * enable/disable. */
-		DEF_MUTLCAP_CLK_PRESCALE,
-		DEF_MUTLCAP_SENSE_RESISTOR,
-		DEF_MUTLCAP_CC_CAL_CLK_PRESCALE,
-		DEF_MUTLCAP_CC_CAL_SENSE_RESISTOR,
+		mutlcap_prsc_per_node,
+		mutlcap_resistor_per_node,
+		mutlcap_boot_prsc_per_node,
+		mutlcap_boot_resistor_per_node,
 		mutlcap_freq_hops,
 		DEF_MUTLCAP_FILTER_LEVEL, /* Mutual Cap filter level setting. */
 		DEF_MUTLCAP_AUTO_OS,    /* Mutual Cap auto oversamples setting.
@@ -203,7 +222,16 @@ static touch_mutlcap_config_t mutlcap_config = {
 	                                 * pointer. */
 	DEF_MUTLCAP_FREQ_AUTO_TUNE_ENABLE,
 	DEF_MUTLCAP_NOISE_MEAS_ENABLE,
-	DEF_MUTLCAP_NOISE_MEAS_BUFFER_CNT
+	DEF_MUTLCAP_NOISE_MEAS_BUFFER_CNT,
+	DEF_MUTLCAP_MOIS_TOLERANCE_ENABLE,
+	DEF_MUTLCAP_NUM_MOIS_GROUPS,
+	DEF_MUTLCAP_MOIS_QUICK_REBURST_ENABLE,
+	.tlib_feature_list ={
+		.lk_chk = DEF_LOCKOUT_FUNC,
+		.auto_os_init = DEF_AUTO_OS_FUNC,//auto_os_resolve,
+		.auto_tune_init = DEF_MUTL_AUTO_TUNE_FUNC,// mutual_auto_tuning
+		.enable_aks = DEF_AKS_FUNC, /*AKS grouping function */
+	}
 };
 
 /**
@@ -297,7 +325,7 @@ touch_ret_t touch_sensors_init(void)
 	 * DEF_MUTLCAP_SENSE_RESISTOR
 	 *
 	 */
-	touch_ret = touch_mutlcap_sensors_calibrate(AUTO_TUNE_RSEL);
+	touch_ret = touch_mutlcap_sensors_calibrate(DEF_MUTL_AUTO_TUNE_VALUE);
 	if (touch_ret != TOUCH_SUCCESS) {
 		while (1u) {    /* Check API Error return code. */
 		}
@@ -309,6 +337,9 @@ touch_ret_t touch_sensors_init(void)
 touch_ret_t touch_sensors_measure(void)
 {
 	touch_ret_t touch_ret = TOUCH_SUCCESS;
+	
+	if (!(p_mutlcap_measure_data->acq_status & TOUCH_CC_CALIB_ERROR))
+       {
 
 	if (touch_time.time_to_measure_touch == 1u) {
 		/* Start a touch sensors measurement process. */
@@ -331,9 +362,23 @@ touch_ret_t touch_sensors_measure(void)
 			 * input parameter.
 			 *     2. The api has been called during a invalid Touch
 			 * Library state. */
+			 }
 		}
 	}
-
+    else
+    {
+		   while(1)
+              {
+                     /* Hardware calibration error, check the hardware,
+                        and ensure it is proper, if the error persists
+                        check the user manual for design guidelines*/
+                     /*
+                     To find which sensor failed in the calibration, check
+                     p_xxxxcap_measure_data->p_sensors[<sensor>].state == SENSOR_CALIBRATION_ERROR
+                     */
+              }
+    }
+	
 	return (touch_ret);
 }
 
@@ -347,33 +392,48 @@ touch_ret_t touch_sensors_config(void)
 	touch_ret_t touch_ret = TOUCH_SUCCESS;
 	sensor_id_t sensor_id;
 
+#if (BSP_SUPPORT == BOARD_RFRINGQM)
+	touch_ret = touch_mutlcap_sensor_config(SENSOR_TYPE_KEY, CHANNEL_0,CHANNEL_0, NO_AKS_GROUP, 15u, HYST_25,RES_8_BIT, 0u, &sensor_id);
+	if (touch_ret != TOUCH_SUCCESS)
+	{
+		while (1) ;
+	}
+
+
+	touch_ret = touch_mutlcap_sensor_config(SENSOR_TYPE_ROTOR, CHANNEL_1,CHANNEL_6, NO_AKS_GROUP, 20u, HYST_25,RES_8_BIT, 0u, &sensor_id);
+	if (touch_ret != TOUCH_SUCCESS)
+	{
+		while (1) ;
+	}
+#elif(BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+
 	touch_ret = touch_mutlcap_sensor_config(SENSOR_TYPE_KEY, CHANNEL_0,
-			CHANNEL_0, NO_AKS_GROUP, 15u,
-			HYST_6_25, RES_8_BIT, 0,
-			&sensor_id);
+	CHANNEL_0, NO_AKS_GROUP, 15u,
+	HYST_6_25, RES_8_BIT, 0,
+	&sensor_id);
 	if (touch_ret != TOUCH_SUCCESS) {
 		while (1) {
 		}
 	}
 
 	touch_ret = touch_mutlcap_sensor_config(SENSOR_TYPE_KEY, CHANNEL_1,
-			CHANNEL_1, NO_AKS_GROUP, 15u,
-			HYST_6_25, RES_8_BIT, 0,
-			&sensor_id);
+	CHANNEL_1, NO_AKS_GROUP, 15u,
+	HYST_6_25, RES_8_BIT, 0,
+	&sensor_id);
 	if (touch_ret != TOUCH_SUCCESS) {
 		while (1) {
 		}
 	}
 
 	touch_ret = touch_mutlcap_sensor_config(SENSOR_TYPE_SLIDER, CHANNEL_2,
-			CHANNEL_5, NO_AKS_GROUP, 30u,
-			HYST_6_25, RES_8_BIT, 0,
-			&sensor_id);
+	CHANNEL_5, NO_AKS_GROUP, 30u,
+	HYST_6_25, RES_8_BIT, 0,
+	&sensor_id);
 	if (touch_ret != TOUCH_SUCCESS) {
 		while (1) {
 		}
 	}
-
+#endif
 	return (touch_ret);
 }
 

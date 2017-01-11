@@ -62,6 +62,14 @@
   #define halOffFirstLed()      (void)0
   #define halReadFirstLed()     (void)0
   #define halToggleFirstLed()   (void)0
+#elif (BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM) || \
+  (BSP_SUPPORT == BOARD_RFSTRIP) || (BSP_SUPPORT == BOARD_RFBRIDGE)
+  #define halInitFirstLed()     GPIO_B22_make_out()
+  #define halUnInitFirstLed()   GPIO_B22_make_in()
+  #define halOnFirstLed()       GPIO_B22_clr()
+  #define halOffFirstLed()      GPIO_B22_set()
+  #define halReadFirstLed()     GPIO_B22_read()
+  #define halToggleFirstLed()   GPIO_B22_toggle()
 #endif
 
 /**************************************************************************//**

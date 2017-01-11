@@ -85,6 +85,36 @@ void BSP_BoardSpecificUsartPinInit(UsartChannel_t tty)
     tty->usartPinConfig[USART_RX_SIG].functionConfig = 3;
     tty->rxPadConfig = 3;
     tty->txPadConfig = 0;
+#elif (BSP_SUPPORT == BOARD_RFRINGQM)
+    tty->sercom = &(SERCOM0->USART);
+    tty->usartPinConfig[USART_TX_SIG].pinNum = 4;
+    tty->usartPinConfig[USART_TX_SIG].portNum = PORT_A;
+    tty->usartPinConfig[USART_TX_SIG].functionConfig = 3;
+    tty->usartPinConfig[USART_RX_SIG].pinNum = 7;
+    tty->usartPinConfig[USART_RX_SIG].portNum = PORT_A;
+    tty->usartPinConfig[USART_RX_SIG].functionConfig = 3;
+    tty->rxPadConfig = 3;
+    tty->txPadConfig = 0;
+#elif (BSP_SUPPORT == BOARD_RFRINGQT)
+    tty->sercom = &(SERCOM1->USART);
+    tty->usartPinConfig[USART_TX_SIG].pinNum = 16;
+    tty->usartPinConfig[USART_TX_SIG].portNum = PORT_A;
+    tty->usartPinConfig[USART_TX_SIG].functionConfig = 2;
+    tty->usartPinConfig[USART_RX_SIG].pinNum = 17;
+    tty->usartPinConfig[USART_RX_SIG].portNum = PORT_A;
+    tty->usartPinConfig[USART_RX_SIG].functionConfig = 2;
+    tty->rxPadConfig = 1;
+    tty->txPadConfig = 0;
+#elif (BSP_SUPPORT == BOARD_RFSTRIP)
+    tty->sercom = &(SERCOM1->USART);
+    tty->usartPinConfig[USART_TX_SIG].pinNum = 18;
+    tty->usartPinConfig[USART_TX_SIG].portNum = PORT_A;
+    tty->usartPinConfig[USART_TX_SIG].functionConfig = 2;
+    tty->usartPinConfig[USART_RX_SIG].pinNum = 19;
+    tty->usartPinConfig[USART_RX_SIG].portNum = PORT_A;
+    tty->usartPinConfig[USART_RX_SIG].functionConfig = 2;
+    tty->rxPadConfig = 3;
+    tty->txPadConfig = 1;
 #endif
   }
   else if (tty == USART_CHANNEL_1)

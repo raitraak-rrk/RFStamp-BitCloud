@@ -15,7 +15,7 @@ Licensed under Atmel's Limited License Agreement (BitCloudTM).
 History:
 18.01.12 Yogesh  - Created to Support SAMR21 with Touch(Multi Cap) Integrated 
 ******************************************************************************/
-#if((QTOUCH_SUPPORT == 1) && (BSP_SUPPORT == BOARD_SAMR21_ZLLEK))
+#if((QTOUCH_SUPPORT == 1) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFRINGQM) || (BSP_SUPPORT == BOARD_RFRINGQT)))
 /******************************************************************************
                     Includes section
 ******************************************************************************/
@@ -26,11 +26,12 @@ History:
 #include <halAppClock.h>
 #include <halInterrupt.h>
 #include <atsamr21.h>
+#include <touch.h>
+
 
 /******************************************************************************
                     Local variables
 ******************************************************************************/    
-static uint8_t touch_button_previous_state[2];
 static BSP_TouchEventHandler_t bspTouchEventHandler = NULL;
 void configure_port_pins(void);
 static void qTimer_Start(void);
@@ -67,23 +68,92 @@ void BSP_InitQTouch(BSP_TouchEventHandler_t handler)
 ******************************************************************************/
 void bspTouchHandler(void)
 { 
-  uint8_t button1_state,temp_button1_state;
-  uint8_t button2_state,temp_button2_state;
-  uint8_t slider_state;
-  uint8_t button,event = TOUCHKEY_NO_EVENT;
-  uint8_t slider_threshold;
+  uint8_t button, event;
   
   /**
   * Start touch sensor measurement, if touch_time.time_to_measure_touch flag is set by timer.
   */
   touch_sensors_measure();
   
+#if (BSP_SUPPORT == BOARD_RFRINGQM)
+  static uint8_t button_previous_state = 0;
+  static uint8_t wheel_previous_state = 0;
+  static uint8_t wheel_previous_position = 0;
   /**
   * Update touch status once measurement complete flag is set.
   */
   if ((p_mutlcap_measure_data->measurement_done_touch == 1u))
   {
+	uint8_t button_state;
+	uint8_t wheel_state;
+	uint8_t wheel_position;
+	
     p_mutlcap_measure_data->measurement_done_touch = 0u;
+    
+    /**
+    * Get touch sensor states
+    */
+    
+    button_state = GET_MUTLCAP_SENSOR_STATE(0);
+    wheel_state = GET_MUTLCAP_SENSOR_STATE(1);
+    wheel_position = GET_MUTLCAP_ROTOR_SLIDER_POSITION(0);
+	/* Filter the LSB. */
+	wheel_position &= ~0x01;
+    
+	/* Check button. */
+	if (button_state ^ button_previous_state)
+	{
+		if(button_state)
+		{
+			button = BUTTON;
+			event = TOUCHKEY_PRESSED_EVENT;
+		}
+		else
+		{
+			button = BUTTON;
+			event = TOUCHKEY_RELEASED_EVENT;
+		}
+		bspTouchEventHandler(event,button,0);
+		button_previous_state = button_state;
+	}
+	
+    if (wheel_state ^ wheel_previous_state)
+    {
+      if(wheel_state)
+      {
+		button = WHEEL;
+		event = TOUCHKEY_PRESSED_EVENT;
+	  }
+	  else
+	  {
+		button = WHEEL;
+		event = TOUCHKEY_RELEASED_EVENT;
+	  }
+	  bspTouchEventHandler(event,button,wheel_position);
+	  wheel_previous_state = wheel_state;
+	}
+	else if ((wheel_state) && (wheel_position != wheel_previous_position))
+	{
+	  button = WHEEL;
+	  event = TOUCHKEY_WHEEL_EVENT;
+	  bspTouchEventHandler(event,button,wheel_position);
+	}
+	wheel_previous_position = wheel_position;
+  }
+#else
+  static uint8_t touch_button_previous_state[2];
+  
+  /**
+  * Update touch status once measurement complete flag is set.
+  */
+  if ((p_mutlcap_measure_data->measurement_done_touch == 1u))
+  {
+    uint8_t button1_state,temp_button1_state;
+    uint8_t button2_state,temp_button2_state;
+    uint8_t slider_state;
+    uint8_t slider_threshold;
+    
+	p_mutlcap_measure_data->measurement_done_touch = 0u;
     
     /**
     * Get touch sensor states
@@ -137,6 +207,7 @@ void bspTouchHandler(void)
       }
     }
   }
+#endif
 }
 
 /**************************************************************************//**

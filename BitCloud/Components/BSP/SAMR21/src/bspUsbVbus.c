@@ -54,6 +54,17 @@ void BSP_BoardSpecificUsbVbusInit(void)
 
   GPIO_pinfunc_config(&usbVbusDetect);
   HAL_RegisterIrq(IRQ_EIC_EXTINT7, IRQ_ANY_EDGE, uhd_vbus_handler);
+
+#elif ((BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM) ||\
+    (BSP_SUPPORT == BOARD_RFSTRIP) || (BSP_SUPPORT == BOARD_RFBRIDGE))
+
+  usbVbusDetect.portNum = PORT_B;
+  usbVbusDetect.pinNum = 23;  /*External Interrupt*/
+  usbVbusDetect.functionConfig = 0;
+
+  GPIO_pinfunc_config(&usbVbusDetect);
+  HAL_RegisterIrq(IRQ_EIC_EXTINT7, IRQ_ANY_EDGE, uhd_vbus_handler);
+
 #endif
 }
 
@@ -63,8 +74,8 @@ void BSP_BoardSpecificUsbVbusInit(void)
 ******************************************************************************/
 uint8_t BSP_isUsbVbusHigh(void)
 {
-#if (BSP_SUPPORT == BOARD_SAMR21_XPRO)
-
+#if ((BSP_SUPPORT == BOARD_SAMR21_XPRO) || (BSP_SUPPORT == BOARD_RFRINGQT) || (BSP_SUPPORT == BOARD_RFRINGQM) ||\
+    (BSP_SUPPORT == BOARD_RFSTRIP) ||(BSP_SUPPORT == BOARD_RFBRIDGE))
   return GPIO_read(&usbVbusDetect);
 #else
   return false;

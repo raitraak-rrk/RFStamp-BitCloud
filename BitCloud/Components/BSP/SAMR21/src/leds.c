@@ -44,7 +44,7 @@
 /* Set top counter value using PWM frequency */
 #define TOP GET_TOP(APP_PWM_FREQUENCY, PRESCALER)
 
-#if (BSP_SUPPORT == BOARD_SAMR21_XPRO) || (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if ((BSP_SUPPORT == BOARD_SAMR21_XPRO) || (BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP))
 /******************************************************************************
                    Prototypes section
 ******************************************************************************/
@@ -53,13 +53,13 @@ static void initPwm(void);
 void bspSetPwmChannelCompareValue(uint16_t r, uint16_t g, uint16_t b);
 #endif // APP_USE_PWM
 
-#if defined(APP_USE_PWM) &&  (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if defined(APP_USE_PWM) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP))
 static void ledsSetColor(void);
 #endif
 /******************************************************************************
                     Local variables
 ******************************************************************************/
-#if defined(APP_USE_PWM) &&  (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if defined(APP_USE_PWM) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP))
 static uint8_t currentL;
 static uint16_t currentX, currentY;
 #endif /* APP_USE_PWM */
@@ -69,6 +69,9 @@ static uint16_t currentX, currentY;
 ******************************************************************************/
 #if defined(APP_USE_PWM)
 static HAL_PwmDescriptor_t pwmChannel0;
+#if (BSP_SUPPORT == BOARD_RFSTRIP)
+static HAL_PwmDescriptor_t pwmChannel1;
+#endif
 #endif
 
 /******************************************************************************
@@ -205,6 +208,37 @@ static void initPwm(void)
   else
      pwmChannel0.dithResoultion = DITH6;
   pwmChannel0.dithercycles = 48;
+#elif BSP_SUPPORT == BOARD_RFSTRIP
+  /* Descriptors initialization */
+  pwmChannel0.unit = PWM_UNIT_0;
+  pwmChannel0.channelMask = (1 << PWM_CHANNEL_0) | (1 << PWM_CHANNEL_1);
+  pwmChannel0.polarityMask = (PWM_POLARITY_NON_INVERTED << PWM_CHANNEL_0) | (PWM_POLARITY_NON_INVERTED << PWM_CHANNEL_1);
+  pwmChannel0.channelPinCfg[PWM_CHANNEL_0].portNum = PORT_A;
+  pwmChannel0.channelPinCfg[PWM_CHANNEL_0].pinNum =  4;
+  pwmChannel0.channelPinCfg[PWM_CHANNEL_0].functionConfig = 4;
+  pwmChannel0.channelPinCfg[PWM_CHANNEL_1].portNum = PORT_A;
+  pwmChannel0.channelPinCfg[PWM_CHANNEL_1].pinNum =  5;
+  pwmChannel0.channelPinCfg[PWM_CHANNEL_1].functionConfig = 4;
+  pwmChannel0.ditheringMask = (ENABLE_DITHERING_A << PWM_CHANNEL_0) | (ENABLE_DITHERING_B << PWM_CHANNEL_1);
+  if(pwmChannel0.ditheringMask == 0x00)
+	pwmChannel0.dithResoultion = NO_DITH;
+  else
+	pwmChannel0.dithResoultion = DITH6;
+  pwmChannel0.dithercycles = 48;
+  
+  /* Descriptors initialization */
+  pwmChannel1.unit = PWM_UNIT_1;
+  pwmChannel1.channelMask = (1 << PWM_CHANNEL_0);
+  pwmChannel1.polarityMask = (PWM_POLARITY_NON_INVERTED << PWM_CHANNEL_0);
+  pwmChannel1.channelPinCfg[PWM_CHANNEL_0].portNum = PORT_A;
+  pwmChannel1.channelPinCfg[PWM_CHANNEL_0].pinNum =  6;
+  pwmChannel1.channelPinCfg[PWM_CHANNEL_0].functionConfig = 4;
+  pwmChannel1.ditheringMask = (ENABLE_DITHERING_A << PWM_CHANNEL_0);
+  if(pwmChannel1.ditheringMask == 0x00)
+	pwmChannel1.dithResoultion = NO_DITH;
+  else
+	pwmChannel1.dithResoultion = DITH6;
+  pwmChannel1.dithercycles = 48;
 #endif
 
   /* Prepare required PWM channels */
@@ -214,6 +248,17 @@ static void initPwm(void)
 
   /* Start PWM on supported channels */
   HAL_StartPwm(&pwmChannel0);
+
+#if BSP_SUPPORT == BOARD_RFSTRIP
+  /* Prepare required PWM channels */
+  HAL_OpenPwm(PWM_UNIT_1);
+  /* Set PWM frequency for required module */
+  HAL_SetPwmFrequency(&pwmChannel1, TOP, PRESCALER);
+
+  /* Start PWM on supported channels */
+  HAL_StartPwm(&pwmChannel1);
+#endif
+
 }
 #endif
 /**************************************************************************//**
@@ -222,7 +267,7 @@ static void initPwm(void)
 ******************************************************************************/
 void BSP_SetLedColorHS(uint16_t hue, uint8_t saturation)
 {
-#if defined(APP_USE_PWM) &&  (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if defined(APP_USE_PWM) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP))
   unsigned int x, y;
 
   HS2XY(hue >> 8, saturation, &x, &y);
@@ -240,7 +285,7 @@ void BSP_SetLedColorHS(uint16_t hue, uint8_t saturation)
 ******************************************************************************/
 void BSP_SetLedColorXY(uint16_t x, uint16_t y)
 {
-#if defined(APP_USE_PWM) &&  (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if defined(APP_USE_PWM) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP))
   currentX = x;
   currentY = y;
   ledsSetColor();
@@ -256,6 +301,16 @@ void BSP_SetLedColorXY(uint16_t x, uint16_t y)
 ******************************************************************************/
 void bspSetPwmChannelCompareValue(uint16_t r, uint16_t g, uint16_t b)
 {
+#if BSP_SUPPORT == BOARD_RFSTRIP
+  pwmChannel0.channelMask = (1 << PWM_CHANNEL_0);
+  HAL_SetPwmCompareValue(&pwmChannel0, r);
+
+  pwmChannel0.channelMask = (1 << PWM_CHANNEL_1);
+  HAL_SetPwmCompareValue(&pwmChannel0, g);
+
+  pwmChannel1.channelMask = (1 << PWM_CHANNEL_0);
+  HAL_SetPwmCompareValue(&pwmChannel1, b);
+#else
   pwmChannel0.channelMask = (1 << PWM_CHANNEL_2);
   HAL_SetPwmCompareValue(&pwmChannel0, b);
 
@@ -264,13 +319,14 @@ void bspSetPwmChannelCompareValue(uint16_t r, uint16_t g, uint16_t b)
 
   pwmChannel0.channelMask = (1 << PWM_CHANNEL_0);
   HAL_SetPwmCompareValue(&pwmChannel0, r);
+#endif
 }
 #endif
 
 /**************************************************************************//**
 \brief Set PWM values for current X, Y and L values
 ******************************************************************************/
-#if defined(APP_USE_PWM) &&  (BSP_SUPPORT == BOARD_SAMR21_ZLLEK)
+#if defined(APP_USE_PWM) && ((BSP_SUPPORT == BOARD_SAMR21_ZLLEK) || (BSP_SUPPORT == BOARD_RFSTRIP))
 static void ledsSetColor(void)
 {
 #ifdef APP_USE_PWM
